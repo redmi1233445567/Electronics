@@ -170,7 +170,7 @@ export default function page() {
       <h1 className="text-[32px] text-center mb-5 font-bold text-blue-600 w-fit px-[20px] py-[10px] border-[1px] border-blue-600  mx-auto bg-white rounded-md">
         Accessories
       </h1>
-      <div className="flex px-[308px] mb-[30px] gap-2 items-center text-[20px] max-sm:flex-wrap max-lg:px-[30px]">
+      <div className="flex px-[308px] mb-[30px] gap-1 items-center justify-center text-[20px] max-sm:flex-wrap max-lg:px-[30px]">
         <p>Filter:</p>
         <select
           name="name"
@@ -184,7 +184,7 @@ export default function page() {
         </select>
         <div>
           {isName ? (
-            <div className="flex gap-5">
+            <div className="flex gap-[10px]">
               <input
                 type="text"
                 value={nameS}
@@ -202,7 +202,7 @@ export default function page() {
             console.log()
           )}
           {isQ ? (
-            <div className="flex gap-5">
+            <div className="flex gap-[10px]">
               <input
                 type="number"
                 placeholder="Min"
@@ -228,7 +228,7 @@ export default function page() {
             console.log()
           )}
           {isPrice ? (
-            <div className="flex gap-5">
+            <div className="flex gap-[8px]">
               <input
                 type="number"
                 placeholder="MinP"
@@ -269,7 +269,7 @@ export default function page() {
                 key={ser._id}
                 className="w-[200px] relative bg-white hover:-translate-y-1  rounded-md hover:shadow-2xl transition-all shadow overflow-hidden group cursor-pointer"
               >
-                <div className=" hidden group-hover:flex justify-center items-center absolute bg-blue-600/50 top-0 left-0 w-full h-full"></div>
+                <div className=" hidden group-active:flex justify-center items-center absolute bg-blue-600/50 top-0 left-0 w-full h-full"></div>
                 <div className=" relative">
                   <Image src={img} alt="Picture of the author" />
                 </div>
@@ -277,7 +277,7 @@ export default function page() {
                   <p className="text-[24px] text-blue-600 text-center font-bold">
                     {ser.name}
                   </p>
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <p className="text-green-600">{ser.quantity}/Q</p>
                     <p className="text-red-600">{ser.price}$</p>
                   </div>

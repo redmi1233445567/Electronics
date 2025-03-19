@@ -169,14 +169,23 @@ export default function page() {
     }
   };
 
+  const handellHover = (id) => {
+    const test = document.querySelector(`.${id}`);
+    if (test.style.display == "flex") {
+      test.style.display = "none";
+    } else {
+      test.style.display = "flex";
+    }
+  };
+
   return (
     <div className=" w-full pt-[150px] pb-[50px]">
       <Nav />
       <h1 className="text-[32px] text-center mb-5 font-bold text-blue-600 w-fit px-[20px] py-[10px] border-[1px] border-blue-600  mx-auto bg-white rounded-md">
         Parts
       </h1>
-      <div className="flex px-[308px] mb-[30px] gap-2 items-center text-[20px] max-sm:flex-wrap max-lg:px-[30px]">
-        <div className="flex gap-5">
+      <div className="flex px-[308px] mb-[30px] gap-2 justify-center items-center text-[20px] max-sm:flex-wrap max-lg:px-[30px]">
+        <div className="flex gap-[10px]">
           <input
             type="text"
             value={nameS}
@@ -205,7 +214,9 @@ export default function page() {
                 key={ser._id}
                 className="w-[200px] relative bg-white hover:-translate-y-1  rounded-md hover:shadow-2xl transition-all shadow overflow-hidden group cursor-pointer"
               >
-                <div className=" hidden group-hover:flex justify-center flex-col items-center absolute bg-blue-600/95 top-0 left-0 w-full h-full">
+                <div
+                  className={`hidden group-hover:flex ${ser.name} justify-center flex-col items-center absolute bg-blue-600/95 top-0 left-0 w-full h-full`}
+                >
                   <div className="flex justify-around font-bold w-full mb-[20px]">
                     <div
                       onClick={() => togellUpdate(ser.name, ser._id)}
@@ -242,7 +253,15 @@ export default function page() {
                   <p className="text-[24px] text-blue-600 text-center font-bold">
                     {ser.name}
                   </p>
-                  <p className="text-green-600">{ser.quantity}/Q</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-green-600">{ser.quantity}/Q</p>
+                    <p
+                      onClick={() => handellHover(ser.name)}
+                      className="w-[30px] relative h-[30px] hidden max-sm:flex -translate-y-1 bg-blue-400 rounded-full text-white justify-center items-center font-bold"
+                    >
+                      +
+                    </p>
+                  </div>
                 </div>
               </div>
             );

@@ -101,7 +101,7 @@ export default function page() {
             </button>
           </Link>
         </div>
-        <div className=" w-[50%] h-full flex justify-center items-center">
+        <div className=" w-[50%] h-full flex justify-center items-center max-md:hidden">
           <Image
             src={img}
             alt="Picture of the author"
