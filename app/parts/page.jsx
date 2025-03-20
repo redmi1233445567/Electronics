@@ -215,7 +215,7 @@ export default function page() {
                 className="w-[200px] relative bg-white hover:-translate-y-1  rounded-md hover:shadow-2xl transition-all shadow overflow-hidden group cursor-pointer"
               >
                 <div
-                  className={`hidden group-hover:flex ${ser.name} justify-center flex-col items-center absolute bg-blue-600/95 top-0 left-0 w-full h-full`}
+                  className={`hidden group-hover:!flex ${`go${ser._id}`} justify-center flex-col items-center absolute bg-blue-600/95 top-0 left-0 w-full h-full`}
                 >
                   <div className="flex justify-around font-bold w-full mb-[20px]">
                     <div
@@ -256,7 +256,7 @@ export default function page() {
                   <div className="flex items-center justify-between">
                     <p className="text-green-600">{ser.quantity}/Q</p>
                     <p
-                      onClick={() => handellHover(ser.name)}
+                      onClick={() => handellHover(`go${ser._id}`)}
                       className="w-[30px] relative h-[30px] hidden max-sm:flex -translate-y-1 bg-blue-400 rounded-full text-white justify-center items-center font-bold"
                     >
                       +

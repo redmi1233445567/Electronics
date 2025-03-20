@@ -24,7 +24,7 @@ export default function Nav() {
       } else if (e == 2) {
         router.push("/parts");
       } else {
-        router.push("/");
+        router.push("/technician");
       }
     } else {
       toast.error("Please Add Your Acount");
@@ -55,10 +55,11 @@ export default function Nav() {
             >
               Parts
             </li>
-            <li>
-              <a href="#" className="hover:text-gray-200">
-                Pricing
-              </a>
+            <li
+              onClick={() => handellGo(3)}
+              className="hover:text-gray-200 cursor-pointer"
+            >
+              Technician
             </li>
           </ul>
         </nav>

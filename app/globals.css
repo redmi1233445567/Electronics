@@ -23,7 +23,3 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
-
-.selected .group-hover\:flex {
-  display: flex !important; 
-}
