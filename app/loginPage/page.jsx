@@ -26,7 +26,7 @@ export default function page() {
         .post(url, {
           username: userName,
           password: password,
-        },)
+        })
         .then((res) => {
           Cookies.set("authToken", res.data.token);
           router.push("/");
@@ -86,7 +86,7 @@ export default function page() {
           <button
             type="submit"
             onClick={handellLogin}
-            className="w-full bg-blue-600 text-white py-2 px-4 cursor-pointer rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="w-full bg-blue-600 text-white py-2 px-4 cursor-pointer rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-md shadow-black"
           >
             Login
           </button>
@@ -94,7 +94,7 @@ export default function page() {
           <Link href={"../register"} className="w-full">
             <button
               type="button"
-              className="w-full bg-green-500 text-white py-2 px-4 mt-4 cursor-pointer rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              className="w-full bg-green-500 text-white py-2 px-4 mt-4 cursor-pointer rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 shadow-md shadow-black"
             >
               Register
             </button>

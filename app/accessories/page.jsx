@@ -6,6 +6,7 @@ import Image from "next/image";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
+import { checkTokenExpiration } from "../fun/tokenAccess";
 
 export default function page() {
   const token = Cookies.get("authToken");
@@ -25,6 +26,7 @@ export default function page() {
 
   useEffect(() => {
     showData();
+    checkTokenExpiration();
   }, []);
 
   const togglePopup = () => {

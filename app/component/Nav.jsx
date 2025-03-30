@@ -34,30 +34,30 @@ export default function Nav() {
   return (
     <div>
       {/* Header */}
-      <header className="bg-blue-600 shadow-2xl text-white p-4 rounded-lg absolute top-[30px] w-[90%] left-[50%] translate-x-[-50%]">
+      <header className="bg-blue-600 shadow-lg shadow-gray-600 text-white p-4 rounded-lg absolute top-[30px] w-[90%] left-[50%] translate-x-[-50%]">
         <nav>
           <ul className="flex justify-around">
             <li
               onClick={() => handellGo(0)}
-              className="hover:text-gray-200 cursor-pointer"
+              className="hover:text-gray-200 cursor-pointer hover:scale-[108%] transition-all"
             >
               Home
             </li>
             <li
               onClick={() => handellGo(1)}
-              className="hover:text-gray-200 cursor-pointer"
+              className="hover:text-gray-200 cursor-pointer hover:scale-[108%] transition-all"
             >
               Accessories
             </li>
             <li
               onClick={() => handellGo(2)}
-              className="hover:text-gray-200 cursor-pointer"
+              className="hover:text-gray-200 cursor-pointer hover:scale-[108%] transition-all"
             >
               Parts
             </li>
             <li
               onClick={() => handellGo(3)}
-              className="hover:text-gray-200 cursor-pointer"
+              className="hover:text-gray-200 cursor-pointer hover:scale-[108%] transition-all"
             >
               Technician
             </li>

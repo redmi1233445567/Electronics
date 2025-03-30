@@ -87,7 +87,7 @@ export default function page() {
           <button
             type="button"
             onClick={handellRegister}
-            className="w-full bg-green-500 text-white py-2 px-4 mt-4 cursor-pointer rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            className="w-full bg-green-500 shadow-md shadow-black text-white py-2 px-4 mt-4 cursor-pointer rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
           >
             Register
           </button>
@@ -95,7 +95,7 @@ export default function page() {
           <Link href={"../loginPage"} className="w-full">
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 cursor-pointer rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="w-full bg-blue-600 shadow-md shadow-black text-white py-2 px-4 cursor-pointer rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
             >
               Login
             </button>

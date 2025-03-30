@@ -13,7 +13,7 @@ export default function Home() {
   const list = [
     { name: "Parts", img: img2 },
     { name: "Accessories", img: img1 },
-    { name: "Technicians", img: img3 },
+    { name: "Technician", img: img3 },
   ];
 
   const goTo = (e) => {

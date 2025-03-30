@@ -7,6 +7,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { checkTokenExpiration } from "../fun/tokenAccess";
 
 export default function page() {
   const token = Cookies.get("authToken");
@@ -21,6 +22,7 @@ export default function page() {
   const [list, setList] = useState([]);
 
   useEffect(() => {
+    checkTokenExpiration();
     showData();
   }, []);
 
