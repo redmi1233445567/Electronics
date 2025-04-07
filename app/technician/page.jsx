@@ -13,6 +13,7 @@ import Cookies from "js-cookie";
 import { checkTokenExpiration } from "../fun/tokenAccess";
 import { toast, ToastContainer } from "react-toastify";
 import Link from "next/link";
+import PupupInvo from "../component/PupupInvo";
 
 export default function page() {
   const [list, setList] = useState([]);
@@ -25,6 +26,8 @@ export default function page() {
   const [inputPay, setInputPay] = useState();
   const [payId, setPayId] = useState("");
   const [nameS, setnameS] = useState("");
+  const [isOpenAdd, setIsOpenAdd] = useState(false);
+  const [idAdd, setIdAdd] = useState();
 
   useEffect(() => {
     checkTokenExpiration();
@@ -33,6 +36,15 @@ export default function page() {
 
   const togglePopup = () => {
     setIsOpen(!isOpen);
+  };
+
+  const togglePopupAdd = () => {
+    if (isOpenAdd) {
+      setIsOpenAdd(false);
+      showData();
+    } else {
+      setIsOpenAdd(true);
+    }
   };
 
   const togglePopupEdit = (id) => {
@@ -138,7 +150,7 @@ export default function page() {
       <h1 className="text-[32px] text-center mb-5 font-bold text-blue-600 w-fit px-[20px] py-[10px] border-[1px] border-blue-600  mx-auto bg-white rounded-md">
         Technician
       </h1>
-      <div className="flex px-[308px] mb-[30px] gap-2 justify-center items-center text-[20px] max-sm:flex-wrap max-lg:px-[30px]">
+      <div className="flex  mb-[30px] gap-2 justify-between w-full items-center text-[20px] max-sm:flex-wrap max-lg:px-[30px]">
         <div className="flex gap-[10px]">
           <input
             type="text"
@@ -147,6 +159,11 @@ export default function page() {
             className=" block px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
+        <Link href={"/allInvo"}>
+          <div className="text-blue-600 text-[24px] font-bold hover:scale-105 transition-all ">
+            All Incoices
+          </div>
+        </Link>
       </div>
       {listFilter.length ? (
         listFilter.map((li) => {
@@ -200,6 +217,10 @@ export default function page() {
                   </Link>
                   <FontAwesomeIcon
                     icon={faPlus}
+                    onClick={() => {
+                      setIdAdd(li._id);
+                      togglePopupAdd();
+                    }}
                     className="text-[30px] hover:scale-[105%] transition-all cursor-pointer"
                   />
                 </div>
@@ -317,6 +338,17 @@ export default function page() {
               </form>
             </div>
           </div>
+        )}
+      </div>
+
+      <div>
+        {/* Add  */}
+        {isOpenAdd && (
+          <PupupInvo
+            togglePopupAdd={togglePopupAdd}
+            id={idAdd}
+            showData={showData}
+          />
         )}
       </div>
 

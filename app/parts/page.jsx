@@ -12,14 +12,22 @@ import { checkTokenExpiration } from "../fun/tokenAccess";
 export default function page() {
   const token = Cookies.get("authToken");
   const [isOpen, setIsOpen] = useState(false);
+  const [isName, setisName] = useState(false);
+  const [isQ, setIsQ] = useState(false);
+  const [isPrice, setisPrice] = useState(false);
+  const [minQ, setMinQ] = useState(0);
+  const [maxQ, setMaxQ] = useState("");
+  const [minP, setMinP] = useState(0);
+  const [maxP, setMaxP] = useState("");
+  const [nameS, setnameS] = useState("");
   const [input1, setInput1] = useState("");
   const [input2, setInput2] = useState("");
   const [input3, setInput3] = useState("");
   const [input4, setInput4] = useState("");
-  const [nameS, setnameS] = useState("");
   const [id, setId] = useState(0);
   const [update, setUpdate] = useState(false);
   const [list, setList] = useState([]);
+  const [listFilter, setListFilter] = useState([]);
 
   useEffect(() => {
     checkTokenExpiration();
@@ -39,16 +47,18 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const urlS = `https://electronics-backend-production.up.railway.app/api/parts/filter?name=${nameE}`;
+    const urlS = `https://electronics-backend-production.up.railway.app/api/parts`;
 
     axios
       .get(urlS, config)
       .then((res) => {
         console.log(res.data);
-        setInput1(res.data[0].name);
-        setInput2(res.data[0].quantity);
-        setInput3(res.data[0].purchasePrice);
-        setInput4(res.data[0].sellingPrice);
+        let test = res.data.data.filter((item) => item.name == nameE);
+        console.log(test)
+        setInput1(test[0].name);
+        setInput2(test[0].quantity);
+        setInput3(test[0].purchasePrice);
+        setInput4(test[0].sellingPrice);
       })
       .catch((error) => {
         console.log(error);
@@ -136,39 +146,18 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const url = `https://electronics-backend-production.up.railway.app/api/parts/filter`;
+    const url = `https://electronics-backend-production.up.railway.app/api/parts`;
 
     axios
       .get(url, config)
       .then((res) => {
-        console.log(res.data);
         setList(res.data);
+        console.log(res.data.data);
+        setListFilter(res.data.data);
       })
       .catch((error) => {
         console.log(error);
       });
-  };
-
-  const handleSubmitSearch = () => {
-    if (nameS == "") {
-      toast.error("enter name");
-    } else {
-      const token = Cookies.get("authToken");
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-      const urlS = `https://electronics-backend-production.up.railway.app/api/parts/filter?name=${nameS}`;
-
-      axios
-        .get(urlS, config)
-        .then((res) => {
-          console.log(res.data);
-          setList(res.data);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
   };
 
   const handellHover = (id) => {
@@ -180,44 +169,147 @@ export default function page() {
     }
   };
 
+  const handleSubmitSearch = (e, text) => {
+    if (e == 0 && isName == true) {
+      setListFilter([]);
+      let array = [];
+      for (let i = 0; i < list.data.length; i++) {
+        if (list.data[i].name.toLowerCase().includes(text)) {
+          array = [...array, list.data[i]];
+        }
+      }
+      setListFilter(array);
+    } else if (e == 1 && isQ == true) {
+      setListFilter([]);
+      let array = [];
+
+      for (let i = 0; i < list.data.length; i++) {
+        if (list.data[i].quantity <= text && list.data[i].quantity >= minQ) {
+          array = [...array, list.data[i]];
+        }
+      }
+      setListFilter(array);
+    } else if (e == 2 && isPrice == true) {
+      setListFilter([]);
+      let array = [];
+
+      for (let i = 0; i < list.data.length; i++) {
+        if (
+          list.data[i].purchasePrice <= text &&
+          list.data[i].purchasePrice >= minP
+        ) {
+          array = [...array, list.data[i]];
+        }
+      }
+      setListFilter(array);
+    }
+  };
+
+  const showInput = (e) => {
+    if (e == 0) {
+      setisName(!isName);
+      setIsQ(false);
+      setisPrice(false);
+    } else if (e == 1) {
+      setIsQ(!isQ);
+      setisName(false);
+      setisPrice(false);
+    } else {
+      setisName(false);
+      setIsQ(false);
+      setisPrice(!isPrice);
+    }
+    setListFilter(list.data);
+  };
+
   return (
     <div className=" w-full pt-[150px] pb-[50px]">
       <Nav />
       <h1 className="text-[32px] text-center mb-5 font-bold text-blue-600 w-fit px-[20px] py-[10px] border-[1px] border-blue-600  mx-auto bg-white rounded-md">
         Parts
       </h1>
-      <div className="flex px-[308px] mb-[30px] gap-2 justify-center items-center text-[20px] max-sm:flex-wrap max-lg:px-[30px]">
-        <div className="flex gap-[10px]">
-          <input
-            type="text"
-            value={nameS}
-            onChange={(e) => setnameS(e.target.value)}
-            className=" block w-[200px] px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          />
-          <div
-            onClick={handleSubmitSearch}
-            className="p-1 bg-blue-600 text-white font-bold cursor-pointer rounded-md hover:bg-blue-700 transition-all"
-          >
-            Search
-          </div>
+      <div className="flex px-[308px] mb-[30px] gap-1 items-center justify-center text-[20px] max-sm:flex-wrap max-lg:px-[30px]">
+        <div className="py-[6px] flex gap-3 px-[8px] bg-green-600 hover:bg-green-500 transition-all cursor-pointer w-fit text-white rounded-md">
+          <p onClick={() => showInput(0)}>F name</p>
+          {isName ? (
+            <input
+              type="text"
+              value={nameS}
+              onChange={(e) => {
+                setnameS(e.target.value);
+                handleSubmitSearch(0, e.target.value);
+              }}
+              className=" block w-[200px] px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-all"
+            />
+          ) : (
+            console.log()
+          )}
         </div>
-        <div
-          onClick={showData}
-          className="px-1 bg-red-600 text-white font-bold cursor-pointer rounded-md hover:bg-red-700 transition-all"
-        >
-          X
+
+        <div className="py-[6px] flex gap-3 px-[8px] bg-blue-600 hover:bg-blue-500 transition-all cursor-pointer w-fit text-white rounded-md">
+          <p onClick={() => showInput(1)}>F quantity</p>
+          {isQ ? (
+            <div className="flex gap-[10px]">
+              <input
+                type="number"
+                placeholder="Min"
+                value={minQ}
+                onChange={(e) => setMinQ(e.target.value)}
+                className=" block w-[100px] px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="Max"
+                value={maxQ}
+                onChange={(e) => {
+                  setMaxQ(e.target.value);
+                  handleSubmitSearch(1, e.target.value);
+                }}
+                className=" block w-[100px] px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          ) : (
+            console.log()
+          )}
+        </div>
+
+        <div className="py-[6px] flex gap-3 px-[8px] bg-red-600 hover:bg-red-500 transition-all cursor-pointer w-fit text-white rounded-md">
+          <p onClick={() => showInput(2)}>F price</p>
+          {isPrice ? (
+            <div className="flex gap-[8px]">
+              <input
+                type="number"
+                placeholder="MinP"
+                value={minP}
+                onChange={(e) => setMinP(e.target.value)}
+                className=" block w-[100px] px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+              <input
+                type="number"
+                placeholder="MaxP"
+                value={maxP}
+                onChange={(e) => {
+                  setMaxP(e.target.value);
+                  handleSubmitSearch(2, e.target.value);
+                }}
+                className=" block w-[100px] px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          ) : (
+            console.log()
+          )}
         </div>
       </div>
       <div className="w-full lg:px-[300px]  flex justify-center items-center flex-wrap gap-5 font-sans h-full">
-        {list.length > 0 ? (
-          list.map((ser) => {
+        {listFilter.length > 0 ? (
+          listFilter.map((ser) => {
             return (
               <div
                 key={ser._id}
-                className="w-[200px] relative bg-white hover:-translate-y-1  rounded-md hover:shadow-2xl transition-all shadow overflow-hidden group cursor-pointer"
+                className="w-[350px] h-[90px] relative bg-white flex items-center  rounded-md hover:shadow-2xl transition-all shadow overflow-hidden group cursor-pointer"
               >
                 <div
-                  className={`hidden group-hover:!flex ${`go${ser._id}`} justify-center flex-col items-center absolute bg-blue-600/95 top-0 left-0 w-full h-full`}
+                  className={`hidden group-hover:!flex ${`go${ser._id}`} justify-center flex-col items-center absolute bg-blue-600/60 top-0 left-0 w-full h-full`}
                 >
                   <div className="flex justify-around font-bold w-full mb-[20px]">
                     <div
@@ -233,37 +325,25 @@ export default function page() {
                       Delete
                     </div>
                   </div>
-                  <div className="flex justify-around font-bold w-full">
-                    <div className="text-center">
-                      <p className="text-white font-bold">purch</p>
-                      <p className="text-red-600 text-[24px]">
-                        {ser.purchasePrice}$
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-white font-bold">sell</p>
-                      <p className="text-green-900 text-[24px]">
-                        {ser.sellingPrice}$
-                      </p>
-                    </div>
-                  </div>
                 </div>
-                <div className=" ">
-                  <Image src={img} alt="Picture of the author" />
-                </div>
-                <div className="px-[10px] pt-[10px]">
-                  <p className="text-[24px] text-blue-600 text-center font-bold">
+                <Image
+                  src={img}
+                  alt="Picture of the author"
+                  className="w-[50px] h-[50px]"
+                />
+                <div className="px-[10px] pt-[10px] flex text-[12px] justify-between w-full items-center">
+                  <p className="text-[20px] text-blue-600 text-center font-bold w-[40%]">
                     {ser.name}
                   </p>
-                  <div className="flex items-center justify-between">
-                    <p className="text-green-600">{ser.quantity}/Q</p>
-                    <p
-                      onClick={() => handellHover(`go${ser._id}`)}
-                      className="w-[30px] relative h-[30px] hidden max-sm:flex -translate-y-1 bg-blue-400 rounded-full text-white justify-center items-center font-bold"
-                    >
-                      +
-                    </p>
-                  </div>
+                  <p className="text-blue-600">{ser.quantity}/Q</p>
+                  <p className="text-red-600">{ser.purchasePrice}$</p>
+                  <p className="text-green-600">{ser.sellingPrice}$</p>
+                  <p
+                    onClick={() => handellHover(`go${ser._id}`)}
+                    className="w-[30px] relative h-[30px] hidden max-sm:flex -translate-y-1 bg-blue-400 rounded-full text-white justify-center items-center font-bold"
+                  >
+                    +
+                  </p>
                 </div>
               </div>
             );

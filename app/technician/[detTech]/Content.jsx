@@ -3,6 +3,7 @@ import { checkTokenExpiration } from "@/app/fun/tokenAccess";
 import {
   faArrowRight,
   faArrowsRotate,
+  faBackward,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
@@ -11,6 +12,7 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast, ToastContainer } from "react-toastify";
 import PupupInvo from "@/app/component/PupupInvo";
+import Link from "next/link";
 
 export default function Content({ id }) {
   let list = [];
@@ -262,8 +264,20 @@ export default function Content({ id }) {
 
       <div>
         {/* Add  */}
-        {isOpenAdd && <PupupInvo togglePopupAdd={togglePopupAdd} id={id} />}
+        {isOpenAdd && (
+          <PupupInvo
+            togglePopupAdd={togglePopupAdd}
+            id={id}
+            showData={showData}
+          />
+        )}
       </div>
+      <Link href={"/technician"}>
+        <FontAwesomeIcon
+          icon={faBackward}
+          className="font-bold max-md:right-[30px] max-md:bottom-[30px] rotate-180 max-md:text-[30px] hover:scale-[110%] transition-all text-[50px] text-blue-600  fixed cursor-pointer right-[100px] bottom-[100px]"
+        />
+      </Link>
       <ToastContainer />
     </div>
   );

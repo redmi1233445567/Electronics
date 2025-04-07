@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Nav from "../component/Nav";
 import img from "../../image/pngwing.com.png";
 import Image from "next/image";
@@ -11,18 +11,19 @@ import { checkTokenExpiration } from "../fun/tokenAccess";
 export default function page() {
   const token = Cookies.get("authToken");
   const [isOpen, setIsOpen] = useState(false);
-  const [isName, setisName] = useState(true);
+  const [isName, setisName] = useState(false);
   const [isQ, setIsQ] = useState(false);
   const [isPrice, setisPrice] = useState(false);
   const [input1, setInput1] = useState("");
   const [input2, setInput2] = useState("");
   const [input3, setInput3] = useState("");
-  const [minQ, setMinQ] = useState("");
+  const [minQ, setMinQ] = useState(0);
   const [maxQ, setMaxQ] = useState("");
-  const [minP, setMinP] = useState("");
+  const [minP, setMinP] = useState(0);
   const [maxP, setMaxP] = useState("");
   const [nameS, setnameS] = useState("");
   const [list, setList] = useState([]);
+  const [listFilter, setListFilter] = useState([]);
 
   useEffect(() => {
     showData();
@@ -70,100 +71,67 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const url = `https://electronics-backend-production.up.railway.app/api/accessories/filter/name`;
+    const url = `https://electronics-backend-production.up.railway.app/api/accessories`;
 
     axios
       .get(url, config)
       .then((res) => {
-        console.log(res.data);
         setList(res.data);
+        setListFilter(res.data.data);
       })
       .catch((error) => {
         console.log(error);
       });
   };
 
-  const handellFilter = (e) => {
-    if (e == "name") {
-      setisName(true);
-      setIsQ(false);
-      setisPrice(false);
-    } else if (e == "quantity") {
-      setisName(false);
-      setIsQ(true);
-      setisPrice(false);
-    } else if (e == "price") {
-      setisName(false);
-      setIsQ(false);
-      setisPrice(true);
+  const handleSubmitSearch = (e, text) => {
+    if (e == 0 && isName == true) {
+      setListFilter([]);
+      let array = [];
+      for (let i = 0; i < list.data.length; i++) {
+        if (list.data[i].name.toLowerCase().includes(text)) {
+          array = [...array, list.data[i]];
+        }
+      }
+      setListFilter(array);
+    } else if (e == 1 && isQ == true) {
+      setListFilter([]);
+      let array = [];
+
+      for (let i = 0; i < list.data.length; i++) {
+        if (list.data[i].quantity <= text && list.data[i].quantity >= minQ) {
+          array = [...array, list.data[i]];
+        }
+      }
+      setListFilter(array);
+    } else if (e == 2 && isPrice == true) {
+      setListFilter([]);
+      let array = [];
+
+      for (let i = 0; i < list.data.length; i++) {
+        if (list.data[i].price <= text && list.data[i].price >= minP) {
+          array = [...array, list.data[i]];
+        }
+      }
+      setListFilter(array);
     }
   };
 
-  const handleSubmitSearch = (e) => {
+  const showInput = (e) => {
     if (e == 0) {
-      console.log(nameS);
-      if (nameS == "") {
-        toast.error("enter name");
-      } else {
-        const token = Cookies.get("authToken");
-        const config = {
-          headers: { Authorization: `Bearer ${token}` },
-        };
-        const urlS = `https://electronics-backend-production.up.railway.app/api/accessories/filter/name?name=${nameS}`;
-
-        axios
-          .get(urlS, config)
-          .then((res) => {
-            console.log(res.data);
-            setList(res.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
+      setisName(!isName);
+      setIsQ(false);
+      setisPrice(false);
     } else if (e == 1) {
-      console.log(minQ, maxQ);
-      if (maxQ == "" || minQ > maxQ || minQ < 0 || maxQ == 0) {
-        toast.error("Out of ring");
-      } else {
-        const token = Cookies.get("authToken");
-        const config = {
-          headers: { Authorization: `Bearer ${token}` },
-        };
-        const urlS = `https://electronics-backend-production.up.railway.app/api/accessories/filter/quantity?minQuantity=${minQ}&maxQuantity=${maxQ}`;
-
-        axios
-          .get(urlS, config)
-          .then((res) => {
-            console.log(res.data);
-            setList(res.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
+      setIsQ(!isQ);
+      setisName(false);
+      setisPrice(false);
     } else {
-      console.log(minP, maxP);
-      if (maxP == "" || minP > maxP || minP < 0 || maxP == 0) {
-        toast.error("Out of ring");
-      } else {
-        const token = Cookies.get("authToken");
-        const config = {
-          headers: { Authorization: `Bearer ${token}` },
-        };
-        const urlS = `https://electronics-backend-production.up.railway.app/api/accessories/filter/price?minPrice=${minP}&maxPrice=${maxP}`;
-
-        axios
-          .get(urlS, config)
-          .then((res) => {
-            console.log(res.data);
-            setList(res.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
+      setisName(false);
+      setIsQ(false);
+      setisPrice(!isPrice);
     }
+    setListFilter(list.data);
   };
 
   return (
@@ -173,36 +141,25 @@ export default function page() {
         Accessories
       </h1>
       <div className="flex px-[308px] mb-[30px] gap-1 items-center justify-center text-[20px] max-sm:flex-wrap max-lg:px-[30px]">
-        <p>Filter:</p>
-        <select
-          name="name"
-          id="name-select"
-          className="bg-blue-600 rounded-md text-white focus:outline-none py-1"
-          onClick={(e) => handellFilter(e.target.value)}
-        >
-          <option value="name">name</option>
-          <option value="quantity">quantity</option>
-          <option value="price">price</option>
-        </select>
-        <div>
+        <div className="py-[6px] flex gap-3 px-[8px] bg-green-600 hover:bg-green-500 transition-all cursor-pointer w-fit text-white rounded-md">
+          <p onClick={() => showInput(0)}>F name</p>
           {isName ? (
-            <div className="flex gap-[10px]">
-              <input
-                type="text"
-                value={nameS}
-                onChange={(e) => setnameS(e.target.value)}
-                className=" block w-[200px] px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              />
-              <div
-                onClick={() => handleSubmitSearch(0)}
-                className="p-1 bg-blue-600 text-white font-bold cursor-pointer rounded-md hover:bg-blue-700 transition-all"
-              >
-                Search
-              </div>
-            </div>
+            <input
+              type="text"
+              value={nameS}
+              onChange={(e) => {
+                setnameS(e.target.value);
+                handleSubmitSearch(0, e.target.value);
+              }}
+              className=" block w-[200px] px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-all"
+            />
           ) : (
             console.log()
           )}
+        </div>
+
+        <div className="py-[6px] flex gap-3 px-[8px] bg-blue-600 hover:bg-blue-500 transition-all cursor-pointer w-fit text-white rounded-md">
+          <p onClick={() => showInput(1)}>F quantity</p>
           {isQ ? (
             <div className="flex gap-[10px]">
               <input
@@ -216,19 +173,20 @@ export default function page() {
                 type="number"
                 placeholder="Max"
                 value={maxQ}
-                onChange={(e) => setMaxQ(e.target.value)}
+                onChange={(e) => {
+                  setMaxQ(e.target.value);
+                  handleSubmitSearch(1, e.target.value);
+                }}
                 className=" block w-[100px] px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
-              <div
-                onClick={() => handleSubmitSearch(1)}
-                className="p-1 bg-blue-600 text-white font-bold cursor-pointer rounded-md hover:bg-blue-700 transition-all"
-              >
-                Search
-              </div>
             </div>
           ) : (
             console.log()
           )}
+        </div>
+
+        <div className="py-[6px] flex gap-3 px-[8px] bg-red-600 hover:bg-red-500 transition-all cursor-pointer w-fit text-white rounded-md">
+          <p onClick={() => showInput(2)}>F price</p>
           {isPrice ? (
             <div className="flex gap-[8px]">
               <input
@@ -242,47 +200,37 @@ export default function page() {
                 type="number"
                 placeholder="MaxP"
                 value={maxP}
-                onChange={(e) => setMaxP(e.target.value)}
+                onChange={(e) => {
+                  setMaxP(e.target.value);
+                  handleSubmitSearch(2, e.target.value);
+                }}
                 className=" block w-[100px] px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               />
-              <div
-                onClick={() => handleSubmitSearch(2)}
-                className="p-1 bg-blue-600 text-white font-bold cursor-pointer rounded-md hover:bg-blue-700 transition-all"
-              >
-                Search
-              </div>
             </div>
           ) : (
             console.log()
           )}
         </div>
-        <div
-          onClick={showData}
-          className="px-1 bg-red-600 text-white font-bold cursor-pointer rounded-md hover:bg-red-700 transition-all"
-        >
-          X
-        </div>
       </div>
       <div className="w-full lg:px-[300px]  flex justify-center items-center flex-wrap gap-5 font-sans h-full">
-        {list.length > 0 ? (
-          list.map((ser) => {
+        {listFilter.length > 0 ? (
+          listFilter.map((ser) => {
             return (
               <div
                 key={ser._id}
-                className="w-[200px] relative bg-white hover:-translate-y-1  rounded-md hover:shadow-2xl transition-all shadow overflow-hidden group cursor-pointer"
+                className="w-[300px] relative bg-white hover:-translate-y-1 items-center flex rounded-md hover:shadow-2xl transition-all shadow overflow-hidden cursor-pointer"
               >
-                <div className=" hidden group-active:flex justify-center items-center absolute bg-blue-600/50 top-0 left-0 w-full h-full"></div>
-                <div className=" relative">
-                  <Image src={img} alt="Picture of the author" />
-                </div>
-                <div className="px-[10px] pt-[10px]">
-                  <p className="text-[24px] text-blue-600 text-center font-bold">
+                <Image
+                  src={img}
+                  alt="Picture of the author"
+                  className="w-[50px] h-[50px]"
+                />
+                <div className="px-[10px] pt-[10px] flex justify-between items-center w-full">
+                  <p className="text-[24px] text-blue-600 font-bold w-[50%]">
                     {ser.name}
                   </p>
-                  <div className="flex justify-between items-center">
-                    <p className="text-green-600">{ser.quantity}/Q</p>
-                    <p className="text-red-600">{ser.price}$</p>
-                  </div>
+                  <p className="text-green-600 w-[25%]">{ser.quantity}/Q</p>
+                  <p className="text-red-600 w-[25%]">{ser.price}$</p>
                 </div>
               </div>
             );

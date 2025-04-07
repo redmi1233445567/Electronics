@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import React, { useEffect, useReducer, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 
-export default function PupupInvo({ togglePopupAdd, id }) {
+export default function PupupInvo({ togglePopupAdd, id, showData }) {
   const [PartList, setPartList] = useState(["z", "v", "h"]);
   const [inputQ, setInputQ] = useState(1);
   const [inputPr, setInputPr] = useState(0);
@@ -97,6 +97,7 @@ export default function PupupInvo({ togglePopupAdd, id }) {
   const handellSave = (e) => {
     e.preventDefault();
     console.log(allInvoices);
+    console.log(id);
     if (allInvoices[0].items.length) {
       const token = Cookies.get("authToken");
       const config = {
@@ -111,11 +112,12 @@ export default function PupupInvo({ togglePopupAdd, id }) {
         })
         .catch((error) => {
           toast.error(error);
+          console.log(error);
         });
     } else {
       toast.error("add invoice");
     }
-    togglePopupAdd();
+    showData();
   };
 
   return (
@@ -141,9 +143,9 @@ export default function PupupInvo({ togglePopupAdd, id }) {
                 onChange={(e) => selectPart(e.target.value)}
               >
                 {PartList.length ? (
-                  PartList.map((item) => {
+                  PartList.map((item, ind) => {
                     return (
-                      <option key={item.name} value={item._id}>
+                      <option key={ind} value={item._id}>
                         {item.name} ({item.quantity})
                       </option>
                     );

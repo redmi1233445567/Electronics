@@ -5,7 +5,13 @@ export function middleware(req) {
   const token = req.cookies.get("authToken");
 
   // المسارات التي تريد حمايتها
-  const protectedPaths = ["/", "/accessories", "/Parts", "/technician"];
+  const protectedPaths = [
+    "/",
+    "/accessories",
+    "/Parts",
+    "/technician",
+    "/allInvo",
+  ];
 
   // المسارات العامة (غير محمية)
   const publicPaths = ["/loginPage", "/register"];
