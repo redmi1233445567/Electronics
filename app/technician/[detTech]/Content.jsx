@@ -133,9 +133,9 @@ export default function Content({ id }) {
           <div className="flex justify-between items-center my-[30px]">
             <div
               onClick={togglePopupAdd}
-              className="flex gap-2 bg-blue-600 items-center text-white px-[20px] py-[10px] rounded-md hover:bg-blue-500 transition-all cursor-pointer"
+              className="flex gap-2 max-sm:h-[50px] bg-blue-600 items-center text-white px-[20px] py-[10px] rounded-md hover:bg-blue-500 transition-all cursor-pointer"
             >
-              <p>invoice</p>
+              <p className="max-sm:hidden">invoice</p>
               <FontAwesomeIcon icon={faPlus} className="text-[20px]" />
             </div>
             <div
@@ -145,9 +145,9 @@ export default function Content({ id }) {
               Debt repayment
             </div>
           </div>
-          <div className="flex gap-[10px] items-center flex-wrap">
-            <fieldset className="border border-gray-300 rounded-md shadow-sm">
-              <legend className="pl-2 text-gray-700 font-medium">
+          <div className="flex gap-[10px] items-center flex-wrap justify-center">
+            <fieldset className="border border-gray-300 rounded-md shadow-sm max-sm:w-full">
+              <legend className="pl-2 text-gray-700 font-medium text-[14px]">
                 From the date
               </legend>
               <input
@@ -157,8 +157,8 @@ export default function Content({ id }) {
                 className="block w-full px-3 py-1 focus:outline-none "
               />
             </fieldset>
-            <fieldset className="border border-gray-300 rounded-md shadow-sm">
-              <legend className="pl-2 text-gray-700 font-medium">
+            <fieldset className="border border-gray-300 rounded-md shadow-sm max-sm:w-full">
+              <legend className="pl-2 text-gray-700 font-medium text-[14px]">
                 To date
               </legend>
               <input
@@ -180,7 +180,7 @@ export default function Content({ id }) {
             />
           </div>
           <div className="my-[50px]">
-            <div className="flex text-[14px] justify-between">
+            <div className="flex text-[14px] max-sm:text-[11px] justify-between">
               <p className="w-[15%] text-center">Name</p>
               <p className="w-[15%] text-center">quantity</p>
               <p className="w-[15%] text-center">price</p>
@@ -193,7 +193,7 @@ export default function Content({ id }) {
                 return (
                   <div
                     key={item._id}
-                    className="flex items-center text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950"
+                    className="flex items-center max-sm:text-[11px] text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950"
                   >
                     <p className="w-[15%] text-center">{item.partName}</p>
                     <p className="w-[15%] text-center">{item.quantity}</p>

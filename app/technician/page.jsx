@@ -150,7 +150,7 @@ export default function page() {
       <h1 className="text-[32px] text-center mb-5 font-bold text-blue-600 w-fit px-[20px] py-[10px] border-[1px] border-blue-600  mx-auto bg-white rounded-md">
         Technician
       </h1>
-      <div className="flex  mb-[30px] gap-2 justify-between w-full items-center text-[20px] max-sm:flex-wrap max-lg:px-[30px]">
+      <div className="flex  mb-[30px] gap-2 justify-between w-full max-md:justify-center items-center text-[20px] flex-wrap">
         <div className="flex gap-[10px]">
           <input
             type="text"

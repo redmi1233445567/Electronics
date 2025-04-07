@@ -45,7 +45,7 @@ export default function page() {
 
       {/* Login Section */}
       <section className="w-full flex h-full items-center">
-        <div className="bg-white p-6 w-[50%] h-full flex flex-col justify-center items-center">
+        <div className="bg-white p-6 w-[50%] max-md:w-full h-full flex flex-col justify-center items-center">
           <h2 className="text-2xl font-semibold mb-6 text-center">
             Create a new account
           </h2>

@@ -225,12 +225,16 @@ export default function page() {
                   alt="Picture of the author"
                   className="w-[50px] h-[50px]"
                 />
-                <div className="px-[10px] pt-[10px] flex justify-between items-center w-full">
-                  <p className="text-[24px] text-blue-600 font-bold w-[50%]">
+                <div className="px-[10px] text-[12px] pt-[10px] flex justify-between items-center w-full">
+                  <p className="text-[20px] text-blue-600 font-bold w-[60%]">
                     {ser.name}
                   </p>
-                  <p className="text-green-600 w-[25%]">{ser.quantity}/Q</p>
-                  <p className="text-red-600 w-[25%]">{ser.price}$</p>
+                  <p className="text-green-600 w-[20%] text-center">
+                    {ser.quantity}/Q
+                  </p>
+                  <p className="text-red-600 w-[20%] text-center">
+                    {ser.price}$
+                  </p>
                 </div>
               </div>
             );
