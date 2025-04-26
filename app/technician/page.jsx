@@ -7,6 +7,7 @@ import {
   faPenToSquare,
   faPersonCirclePlus,
   faPlus,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -78,8 +79,8 @@ export default function page() {
           config
         )
         .then((res) => {
-          console.log(res.data);
           showData();
+          togglePopup();
         })
         .catch((error) => {
           console.log(error);
@@ -91,7 +92,7 @@ export default function page() {
     setListFilter([]);
     let array = [];
     for (let i = 0; i < list.length; i++) {
-      if (list[i].name.toLowerCase().includes(e)) {
+      if (list[i].name.toLowerCase().includes(e.toLowerCase())) {
         array = [...array, list[i]];
       }
     }
@@ -111,6 +112,32 @@ export default function page() {
         console.log(res.data);
         setList(res.data.data);
         setListFilter(res.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const deleteItem = (id) => {
+    const token = Cookies.get("authToken");
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const urlS = `https://electronics-backend-production.up.railway.app/api/technicians/${id}`;
+
+    axios
+      .delete(urlS, config)
+      .then((res) => {
+        console.log(res);
+        setListFilter([]);
+        let array = [];
+        for (let i = 0; i < list.length; i++) {
+          if (list[i]._id != id) {
+            array = [...array, list[i]];
+          }
+        }
+        setListFilter(array);
+        setList(listFilter);
       })
       .catch((error) => {
         console.log(error);
@@ -145,7 +172,7 @@ export default function page() {
   };
 
   return (
-    <div className="pt-[150px] pb-[50px] px-[200px] max-sm:px-[30px]">
+    <div className="pt-[150px] pb-[50px] md:px-[150px] max-sm:px-[30px]">
       <Nav />
       <h1 className="text-[32px] text-center mb-5 font-bold text-blue-600 w-fit px-[20px] py-[10px] border-[1px] border-blue-600  mx-auto bg-white rounded-md">
         Technician
@@ -165,72 +192,95 @@ export default function page() {
           </div>
         </Link>
       </div>
-      {listFilter.length ? (
-        listFilter.map((li) => {
-          return (
-            <div key={li._id}>
-              <div className="flex items-center hover:bg-blue-200 mb-2 flex-wrap  max-xl:justify-center transition-all w-full  p-[20px] bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950">
-                <p className="font-bold text-[24px] max-sm:text-[18px] w-[200px] max-lg:text-center">
-                  {li.name}
-                </p>
-                <div className=" flex-1/3">
-                  {li.invoices.length ? (
-                    li.invoices.map((item) => {
-                      return (
-                        <div
-                          key={item._id}
-                          className="flex gap-[8px] flex-wrap not-last:border-b-[0.1px] border-blue-500 mr-[50px] "
-                        >
-                          <p className="font-bold max-lg:text-center">
-                            {item.partName} -{" "}
-                          </p>
-                          <p>
-                            <span className="font-bold">quantity:</span>{" "}
-                            {item.quantity}
-                          </p>
-                          <p>
-                            <span className="font-bold">price:</span>{" "}
-                            {item.price}
-                          </p>
-                          <p>
-                            <span className="font-bold">remaining Amount:</span>{" "}
-                            {item.remainingAmount}
-                          </p>
-                        </div>
-                      );
-                    })
-                  ) : (
-                    <p>No invoices</p>
-                  )}
-                </div>
-                <div className="flex gap-[20px]">
-                  <FontAwesomeIcon
-                    icon={faPenToSquare}
-                    onClick={() => togglePopupEdit(li._id)}
-                    className="text-[30px] hover:scale-[105%] transition-all cursor-pointer"
-                  />
-                  <Link href={`/technician/${li._id}`}>
+      <table className="w-[100%] max-sm:w-[90%]  max-sm:text-[13px] max-md:block max-md:overflow-auto">
+        <thead>
+          <tr className="text-blue-600">
+            <th>name</th>
+            <th>invoices</th>
+            <th>procedures</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listFilter.length ? (
+            listFilter.map((li) => {
+              return (
+                <tr
+                  key={li._id}
+                  className="border-b-[1px] border-b-gray-200 hover:bg-blue-100 transition-all pb-[30px]"
+                >
+                  <td className="font-bold text-[24px] max-sm:text-[18px] w-[200px] text-center">
+                    {li.name}
+                  </td>
+                  <td className="  min-w-[300px]">
+                    {li.invoices.length ? (
+                      <table className="w-full mx-auto overflow-auto">
+                        <thead>
+                          <tr>
+                            <th>name</th>
+                            <th>quantity</th>
+                            <th>price</th>
+                            <th>Rprice</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {li.invoices.length ? (
+                            li.invoices.map((item) => {
+                              return (
+                                <tr key={item._id}>
+                                  <td className="text-center w-[40%]">
+                                    {item.partName}
+                                  </td>
+                                  <td className="text-center w-[20%]">
+                                    {item.quantity}
+                                  </td>
+                                  <td className="text-center w-[20%]">
+                                    {item.price}
+                                  </td>
+                                  <td className="text-center w-[20%]">
+                                    {item.remainingAmount}
+                                  </td>
+                                </tr>
+                              );
+                            })
+                          ) : (
+                            <tr>
+                              <td>No invoices</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    ) : (
+                      <p>No invoices</p>
+                    )}
+                  </td>
+                  <td className="flex gap-[20px] justify-center items-center">
                     <FontAwesomeIcon
-                      icon={faEye}
+                      icon={faPenToSquare}
+                      onClick={() => togglePopupEdit(li._id)}
                       className="text-[30px] hover:scale-[105%] transition-all cursor-pointer"
                     />
-                  </Link>
-                  <FontAwesomeIcon
-                    icon={faPlus}
-                    onClick={() => {
-                      setIdAdd(li._id);
-                      togglePopupAdd();
-                    }}
-                    className="text-[30px] hover:scale-[105%] transition-all cursor-pointer"
-                  />
-                </div>
-              </div>
-            </div>
-          );
-        })
-      ) : (
-        <p className="text-[28px] text-blue-950">No technician ...</p>
-      )}
+                    <Link href={`/technician/${li._id}`}>
+                      <FontAwesomeIcon
+                        icon={faEye}
+                        className="text-[30px] hover:scale-[105%] transition-all cursor-pointer"
+                      />
+                    </Link>
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      onClick={() => deleteItem(li._id)}
+                      className="text-[30px] hover:text-red-600 transition-all text-red-400 cursor-pointer"
+                    />
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td>No technician ...</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
 
       <div>
         {/* البوب أب */}

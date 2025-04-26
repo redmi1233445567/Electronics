@@ -41,11 +41,13 @@ export default function page() {
 
   return (
     <div className=" h-full relative w-full">
-      <Nav />
-
       {/* Login Section */}
-      <section className="w-full flex h-full items-center">
-        <div className="bg-white p-6 w-[50%] max-md:w-full h-full flex flex-col justify-center items-center">
+      <section className="w-full flex h-full items-center p-[30px]">
+        <div className="w-[50%] max-md:w-full md:pr-[20px] h-full flex flex-col justify-center items-center">
+          <div className="flex  items-center flex-col text-[30px] font-serif font-extrabold text-blue-600 w-full mt-[-50px] mb-[50px]">
+            <p className="mb-[-15px]">{"{>>}"}</p>
+            <p>Electronice</p>
+          </div>
           <h2 className="text-2xl font-semibold mb-6 text-center">
             Create a new account
           </h2>
@@ -87,21 +89,21 @@ export default function page() {
           <button
             type="button"
             onClick={handellRegister}
-            className="w-full bg-green-500 shadow-md shadow-black text-white py-2 px-4 mt-4 cursor-pointer rounded-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+            className="w-[50%] font-bold text-green-600 py-2 px-4 mt-4 cursor-pointer rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 border-[1px] border-green-600"
           >
             Register
           </button>
           <p className="text-gray-500 my-4">I already have an account</p>
-          <Link href={"../loginPage"} className="w-full">
+          <Link href={"../loginPage"} className="w-[50%]">
             <button
               type="submit"
-              className="w-full bg-blue-600 shadow-md shadow-black text-white py-2 px-4 cursor-pointer rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="w-full font-bold text-blue-600 py-2 px-4 cursor-pointer rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 border-[1px] border-blue-600"
             >
               Login
             </button>
           </Link>
         </div>
-        <div className=" w-[50%] h-full flex justify-center items-center max-md:hidden">
+        <div className="w-[50%] h-full flex justify-center items-center max-md:hidden rounded-md  bg-white">
           <Image
             src={img}
             alt="Picture of the author"

@@ -212,39 +212,47 @@ export default function page() {
           )}
         </div>
       </div>
-      <div className="w-full lg:px-[300px]  flex justify-center items-center flex-wrap gap-5 font-sans h-full">
-        {listFilter.length > 0 ? (
-          listFilter.map((ser) => {
-            return (
-              <div
-                key={ser._id}
-                className="w-[300px] relative bg-white hover:-translate-y-1 items-center flex rounded-md hover:shadow-2xl transition-all shadow overflow-hidden cursor-pointer"
-              >
-                <Image
-                  src={img}
-                  alt="Picture of the author"
-                  className="w-[50px] h-[50px]"
-                />
-                <div className="px-[10px] text-[12px] pt-[10px] flex justify-between items-center w-full">
-                  <p className="text-[20px] text-blue-600 font-bold w-[60%]">
+      <table className="w-[60%] max-sm:w-[80%] mx-auto max-sm:text-[13px]">
+        <thead>
+          <tr>
+            <th>image</th>
+            <th>name</th>
+            <th>quantity</th>
+            <th>price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listFilter.length > 0 ? (
+            listFilter.map((ser) => {
+              return (
+                <tr
+                  key={ser._id}
+                  className="border-b-[1px] border-b-gray-200 hover:bg-blue-100 transition-all"
+                >
+                  <td className="flex justify-center">
+                    <Image
+                      src={img}
+                      alt="Picture of the author"
+                      className="w-[50px] h-[50px]"
+                    />
+                  </td>
+                  <td className="text-[20px] max-sm:text-[14px] text-center text-blue-600 font-bold ">
                     {ser.name}
-                  </p>
-                  <p className="text-green-600 w-[20%] text-center">
+                  </td>
+                  <td className="text-green-600 text-center">
                     {ser.quantity}/Q
-                  </p>
-                  <p className="text-red-600 w-[20%] text-center">
-                    {ser.price}$
-                  </p>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <p className="text-[24px] text-blue-600 text-center">
-            No accessories...
-          </p>
-        )}
-      </div>
+                  </td>
+                  <td className="text-red-600  text-center">{ser.price}$</td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td>No accessories...</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
       <div
         onClick={togglePopup}
         className="font-bold max-md:right-[30px] max-md:bottom-[30px] max-md:w-[50px] max-md:h-[50px] max-md:text-[50px] shadow-blue-600 shadow-2xl hover:scale-[110%] transition-all text-[70px] text-white bg-blue-600 w-[80px] h-[80px] rounded-full flex justify-center items-center fixed cursor-pointer right-[100px] bottom-[100px]"

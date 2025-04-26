@@ -198,7 +198,7 @@ export default function Content({ id }) {
                     <p className="w-[15%] text-center">{item.partName}</p>
                     <p className="w-[15%] text-center">{item.quantity}</p>
                     <p className="w-[15%] text-center">{item.price}</p>
-                    <p className="w-[15%] text-center overflow-x-scroll">
+                    <p className="w-[15%] text-center overflow-x-auto">
                       {item.date}
                     </p>
                     <p className="w-[15%] text-center text-green-600">

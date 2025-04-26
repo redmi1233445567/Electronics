@@ -8,6 +8,8 @@ import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { checkTokenExpiration } from "../fun/tokenAccess";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
 
 export default function page() {
   const token = Cookies.get("authToken");
@@ -54,7 +56,7 @@ export default function page() {
       .then((res) => {
         console.log(res.data);
         let test = res.data.data.filter((item) => item.name == nameE);
-        console.log(test)
+        console.log(test);
         setInput1(test[0].name);
         setInput2(test[0].quantity);
         setInput3(test[0].purchasePrice);
@@ -300,58 +302,66 @@ export default function page() {
           )}
         </div>
       </div>
-      <div className="w-full lg:px-[300px]  flex justify-center items-center flex-wrap gap-5 font-sans h-full">
-        {listFilter.length > 0 ? (
-          listFilter.map((ser) => {
-            return (
-              <div
-                key={ser._id}
-                className="w-[350px] h-[90px] relative bg-white flex items-center  rounded-md hover:shadow-2xl transition-all shadow overflow-hidden group cursor-pointer"
-              >
-                <div
-                  className={`hidden group-hover:!flex ${`go${ser._id}`} justify-center flex-col items-center absolute bg-blue-600/60 top-0 left-0 w-full h-full`}
+      <table className="w-[70%] max-sm:w-[90%] mx-auto max-sm:text-[13px]">
+        <thead>
+          <tr>
+            <th>name</th>
+            <th>quantity</th>
+            <th>Pprice</th>
+            <th>Sprice</th>
+            <th>update</th>
+            <th>delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {listFilter.length > 0 ? (
+            listFilter.map((ser) => {
+              return (
+                <tr
+                  key={ser._id}
+                  className="border-b-[1px] border-b-gray-200 hover:bg-blue-100 transition-all"
                 >
-                  <div className="flex justify-around font-bold w-full mb-[20px]">
-                    <div
-                      onClick={() => togellUpdate(ser.name, ser._id)}
-                      className="bg-orange-600 text-white cursor-pointer hover:bg-orange-700 py-[8px] px-[10px] transition-all rounded-md"
-                    >
-                      Update
-                    </div>
-                    <div
-                      onClick={() => handellDelete(ser._id)}
-                      className="bg-red-600 text-white cursor-pointer hover:bg-red-700 py-[8px] px-[10px] transition-all rounded-md"
-                    >
-                      Delete
-                    </div>
-                  </div>
-                </div>
-                <Image
-                  src={img}
-                  alt="Picture of the author"
-                  className="w-[50px] h-[50px]"
-                />
-                <div className="px-[10px] pt-[10px] flex text-[12px] justify-between w-full items-center">
-                  <p className="text-[20px] text-blue-600 text-center font-bold w-[40%]">
+                  <td className=" text-blue-600 text-center font-bold ">
                     {ser.name}
-                  </p>
-                  <p className="text-blue-600">{ser.quantity}/Q</p>
-                  <p className="text-red-600">{ser.purchasePrice}$</p>
-                  <p className="text-green-600">{ser.sellingPrice}$</p>
-                  <p
-                    onClick={() => handellHover(`go${ser._id}`)}
-                    className="w-[30px] relative h-[30px] hidden max-sm:flex -translate-y-1 bg-blue-400 rounded-full text-white justify-center items-center font-bold"
+                  </td>
+                  <td className="text-blue-600 text-center">
+                    {ser.quantity}/Q
+                  </td>
+                  <td className="text-red-600 text-center">
+                    {ser.purchasePrice}$
+                  </td>
+                  <td className="text-green-600 text-center">
+                    {ser.sellingPrice}$
+                  </td>
+                  <td
+                    onClick={() => togellUpdate(ser.name, ser._id)}
+                    className="flex justify-center"
                   >
-                    +
-                  </p>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <p className="text-[24px] text-blue-600 text-center">No Parts...</p>
-        )}
-      </div>
+                    <FontAwesomeIcon
+                      icon={faPenToSquare}
+                      className="text-[30px] hover:text-orange-600 transition-all text-orange-400 cursor-pointer"
+                    />
+                  </td>
+                  <td
+                    onClick={() => handellDelete(ser._id)}
+                    className="text-center"
+                  >
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      className="text-[30px] hover:text-red-600 transition-all text-red-400 cursor-pointer"
+                    />
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td>No Parts...</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <div className="w-full lg:px-[300px]  flex justify-center items-center flex-wrap gap-5 font-sans h-full"></div>
       <div
         onClick={togglePopup}
         className="font-bold max-md:right-[30px] max-md:bottom-[30px] max-md:w-[50px] max-md:h-[50px] max-md:text-[50px] shadow-blue-600 shadow-2xl hover:scale-[110%] transition-all text-[70px] text-white bg-blue-600 w-[80px] h-[80px] rounded-full flex justify-center items-center fixed cursor-pointer right-[100px] bottom-[100px]"
