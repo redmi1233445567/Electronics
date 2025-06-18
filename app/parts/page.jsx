@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Nav from "../component/Nav";
-import img from "../../image/pngwing.com.png";
-import Image from "next/image";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
@@ -10,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { checkTokenExpiration } from "../fun/tokenAccess";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { mainUrl } from "../api";
 
 export default function page() {
   const token = Cookies.get("authToken");
@@ -49,7 +48,7 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const urlS = `https://electronics-backend-production.up.railway.app/api/parts`;
+    const urlS = `${mainUrl}/parts`;
 
     axios
       .get(urlS, config)
@@ -72,8 +71,7 @@ export default function page() {
       headers: { Authorization: `Bearer ${token}` },
     };
     if (!update) {
-      const url =
-        "https://electronics-backend-production.up.railway.app/api/parts";
+      const url = `${mainUrl}/parts`;
 
       axios
         .post(
@@ -100,7 +98,7 @@ export default function page() {
         });
     } else {
       console.log("up");
-      const url = `https://electronics-backend-production.up.railway.app/api/parts/${id}`;
+      const url = `${mainUrl}/parts/${id}`;
 
       axios
         .put(
@@ -129,7 +127,7 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const url = `https://electronics-backend-production.up.railway.app/api/parts/${id}`;
+    const url = `${mainUrl}/parts/${id}`;
 
     axios
       .delete(url, config)
@@ -148,7 +146,7 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const url = `https://electronics-backend-production.up.railway.app/api/parts`;
+    const url = `${mainUrl}/parts`;
 
     axios
       .get(url, config)
@@ -160,15 +158,6 @@ export default function page() {
       .catch((error) => {
         console.log(error);
       });
-  };
-
-  const handellHover = (id) => {
-    const test = document.querySelector(`.${id}`);
-    if (test.style.display == "flex") {
-      test.style.display = "none";
-    } else {
-      test.style.display = "flex";
-    }
   };
 
   const handleSubmitSearch = (e, text) => {

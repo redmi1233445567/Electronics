@@ -1,12 +1,13 @@
 "use client";
 import React, { useEffect, useRef, useState } from "react";
 import Nav from "../component/Nav";
-import img from "../../image/pngwing.com.png";
-import Image from "next/image";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import { checkTokenExpiration } from "../fun/tokenAccess";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { mainUrl } from "../api";
 
 export default function page() {
   const token = Cookies.get("authToken");
@@ -24,6 +25,8 @@ export default function page() {
   const [nameS, setnameS] = useState("");
   const [list, setList] = useState([]);
   const [listFilter, setListFilter] = useState([]);
+  const [update, setUpdate] = useState(false);
+  const [id, setId] = useState(0);
 
   useEffect(() => {
     showData();
@@ -34,36 +37,83 @@ export default function page() {
     setIsOpen(!isOpen);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const togellUpdate = (nameE, id) => {
+    console.log(nameE);
+    setUpdate(!update);
+    setIsOpen(!isOpen);
+    setId(id);
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const url =
-      "https://electronics-backend-production.up.railway.app/api/accessories";
+    const urlS = `${mainUrl}/accessories`;
 
     axios
-      .post(
-        url,
-        {
-          name: input1,
-          quantity: input2,
-          price: input3,
-        },
-        config
-      )
-      .then(() => {
-        showData();
-        togglePopup();
-        scroll({
-          top: document.body.scrollHeight,
-          behavior: "smooth",
-        });
+      .get(urlS, config)
+      .then((res) => {
+        console.log(res.data);
+        let test = res.data.data.filter((item) => item.name == nameE);
+        console.log(test);
+        setInput1(test[0].name);
+        setInput2(test[0].quantity);
+        setInput3(test[0].price);
       })
       .catch((error) => {
         console.log(error);
-        toast.error("Added Error");
       });
+  };
+
+  const handleSubmit = () => {
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    if (!update) {
+      const url = `${mainUrl}/accessories`;
+
+      axios
+        .post(
+          url,
+          {
+            name: input1,
+            quantity: input2,
+            price: input3,
+          },
+          config
+        )
+        .then(() => {
+          showData();
+          togglePopup();
+          scroll({
+            top: document.body.scrollHeight,
+            behavior: "smooth",
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error("Added Error");
+        });
+    } else {
+      console.log("up");
+      const url = `${mainUrl}/accessories/${id}`;
+
+      axios
+        .put(
+          url,
+          {
+            name: input1,
+            quantity: input2,
+            price: input3,
+          },
+          config
+        )
+        .then(() => {
+          showData();
+          togglePopup();
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error(error);
+        });
+    }
   };
 
   const showData = () => {
@@ -71,7 +121,7 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const url = `https://electronics-backend-production.up.railway.app/api/accessories`;
+    const url = `${mainUrl}/accessories`;
 
     axios
       .get(url, config)
@@ -132,6 +182,25 @@ export default function page() {
       setisPrice(!isPrice);
     }
     setListFilter(list.data);
+  };
+
+  const handellDelete = (id) => {
+    const token = Cookies.get("authToken");
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const url = `${mainUrl}/accessories/${id}`;
+
+    axios
+      .delete(url, config)
+      .then((res) => {
+        showData();
+        toast(res);
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error(error);
+      });
   };
 
   return (
@@ -215,10 +284,11 @@ export default function page() {
       <table className="w-[60%] max-sm:w-[80%] mx-auto max-sm:text-[13px]">
         <thead>
           <tr>
-            <th>image</th>
             <th>name</th>
             <th>quantity</th>
             <th>price</th>
+            <th>update</th>
+            <th>delete</th>
           </tr>
         </thead>
         <tbody>
@@ -229,13 +299,6 @@ export default function page() {
                   key={ser._id}
                   className="border-b-[1px] border-b-gray-200 hover:bg-blue-100 transition-all"
                 >
-                  <td className="flex justify-center">
-                    <Image
-                      src={img}
-                      alt="Picture of the author"
-                      className="w-[50px] h-[50px]"
-                    />
-                  </td>
                   <td className="text-[20px] max-sm:text-[14px] text-center text-blue-600 font-bold ">
                     {ser.name}
                   </td>
@@ -243,6 +306,24 @@ export default function page() {
                     {ser.quantity}/Q
                   </td>
                   <td className="text-red-600  text-center">{ser.price}$</td>
+                  <td
+                    onClick={() => togellUpdate(ser.name, ser._id)}
+                    className="flex justify-center"
+                  >
+                    <FontAwesomeIcon
+                      icon={faPenToSquare}
+                      className="text-[30px] hover:text-orange-600 transition-all text-orange-400 cursor-pointer"
+                    />
+                  </td>
+                  <td
+                    onClick={() => handellDelete(ser._id)}
+                    className="text-center"
+                  >
+                    <FontAwesomeIcon
+                      icon={faTrash}
+                      className="text-[30px] hover:text-red-600 transition-all text-red-400 cursor-pointer"
+                    />
+                  </td>
                 </tr>
               );
             })

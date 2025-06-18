@@ -6,8 +6,8 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import Cookies from "js-cookie";
 import Link from "next/link";
-import logo from "../../image/Preview (1) (1).png";
 import { useRouter } from "next/navigation";
+import { mainUrl } from "../api";
 
 export default function page() {
   const name = useRef();
@@ -17,8 +17,7 @@ export default function page() {
   const handellLogin = () => {
     const userName = name.current.value;
     const password = pass.current.value;
-    const url =
-      "https://electronics-backend-production.up.railway.app/api/auth/login";
+    const url = `${mainUrl}/auth/login`;
     if (userName == "" || password == "") {
       toast.error("Enter your username and password.");
     } else {

@@ -5,7 +5,6 @@ import img from "../../image/pngwing.com.png";
 import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import Cookies from "js-cookie";
-import Nav from "../component/Nav";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -17,8 +16,7 @@ export default function page() {
   const handellRegister = () => {
     const userName = name.current.value;
     const password = pass.current.value;
-    const url =
-      "https://electronics-backend-production.up.railway.app/api/auth/register";
+    const url = `${mainUrl}/auth/register`;
     if (userName == "" || password == "") {
       toast.error("Enter your username and password.");
     } else if (password.length < 6) {

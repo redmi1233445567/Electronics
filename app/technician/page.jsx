@@ -6,7 +6,6 @@ import {
   faEye,
   faPenToSquare,
   faPersonCirclePlus,
-  faPlus,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import axios from "axios";
@@ -15,6 +14,7 @@ import { checkTokenExpiration } from "../fun/tokenAccess";
 import { toast, ToastContainer } from "react-toastify";
 import Link from "next/link";
 import PupupInvo from "../component/PupupInvo";
+import { mainUrl } from "../api";
 
 export default function page() {
   const [list, setList] = useState([]);
@@ -24,9 +24,7 @@ export default function page() {
   const [input1, setInput1] = useState("");
   const [input2, setInput2] = useState("");
   const [input3, setInput3] = useState("");
-  const [inputPay, setInputPay] = useState();
   const [payId, setPayId] = useState("");
-  const [nameS, setnameS] = useState("");
   const [isOpenAdd, setIsOpenAdd] = useState(false);
   const [idAdd, setIdAdd] = useState();
 
@@ -52,8 +50,16 @@ export default function page() {
     setIsOpenEdit(!isOpenEdit);
     if (payId == "") {
       setPayId(id);
+      let oneTech = list.filter((item) => item._id == id);
+      setInput1(oneTech[0].name);
+      setInput2(oneTech[0].email);
+      setInput3(oneTech[0].phone);
+      console.log(oneTech);
     } else {
       setPayId("");
+      setInput1("");
+      setInput2("");
+      setInput3("");
     }
   };
 
@@ -63,7 +69,7 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const urlS = `https://electronics-backend-production.up.railway.app/api/technicians`;
+    const urlS = `${mainUrl}/technicians`;
 
     if (input1 == "" || input3 == "") {
       toast.error("Enter Name and Phone");
@@ -73,7 +79,7 @@ export default function page() {
           urlS,
           {
             name: input1,
-            address: input2,
+            email: input2,
             phone: input3,
           },
           config
@@ -81,6 +87,9 @@ export default function page() {
         .then((res) => {
           showData();
           togglePopup();
+          setInput1("");
+          setInput2("");
+          setInput3("");
         })
         .catch((error) => {
           console.log(error);
@@ -104,7 +113,7 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const urlS = `https://electronics-backend-production.up.railway.app/api/technicians`;
+    const urlS = `${mainUrl}/technicians`;
 
     axios
       .get(urlS, config)
@@ -123,7 +132,7 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const urlS = `https://electronics-backend-production.up.railway.app/api/technicians/${id}`;
+    const urlS = `${mainUrl}/technicians/${id}`;
 
     axios
       .delete(urlS, config)
@@ -147,28 +156,35 @@ export default function page() {
   const pay = (e) => {
     e.preventDefault();
     const token = Cookies.get("authToken");
-    console.log(payId);
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const url = `https://electronics-backend-production.up.railway.app/api/technicians/${payId}/payment`;
+    const urlS = `${mainUrl}/technicians/${payId}`;
 
-    axios
-      .post(
-        url,
-        {
-          amount: +inputPay,
-        },
-        config
-      )
-      .then((res) => {
-        showData();
-        toast.success("seccess");
-      })
-      .catch((error) => {
-        toast.error(error.response.data.error);
-      });
-    togglePopupEdit();
+    if (input1 == "" || input3 == "") {
+      toast.error("Enter Name and Phone");
+    } else {
+      axios
+        .put(
+          urlS,
+          {
+            name: input1,
+            email: input2,
+            phone: input3,
+          },
+          config
+        )
+        .then((res) => {
+          showData();
+          setInput1("");
+          setInput2("");
+          setInput3("");
+          togglePopupEdit();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    }
   };
 
   return (
@@ -228,16 +244,16 @@ export default function page() {
                               return (
                                 <tr key={item._id}>
                                   <td className="text-center w-[40%]">
-                                    {item.partName}
+                                    {item.items[0].partName}
                                   </td>
                                   <td className="text-center w-[20%]">
-                                    {item.quantity}
+                                    {item.items[0].quantity}
                                   </td>
                                   <td className="text-center w-[20%]">
-                                    {item.price}
+                                    {item.items[0].price}
                                   </td>
                                   <td className="text-center w-[20%]">
-                                    {item.remainingAmount}
+                                    {item.items[0].remainingAmount}
                                   </td>
                                 </tr>
                               );
@@ -352,19 +368,40 @@ export default function page() {
         {isOpenEdit && (
           <div className="fixed inset-0 flex items-center justify-center bg-black/20 bg-opacity-50">
             <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-sm:w-[300px]">
-              <h2 className="text-xl font-bold mb-4">
-                Much more than the total due
-              </h2>
+              <h2 className="text-xl font-bold mb-4">edit info</h2>
               <form onSubmit={pay} className="space-y-4">
                 {/*الاسم*/}
                 <label className="block">
                   <fieldset className="border border-gray-300 rounded-md shadow-sm">
                     <legend className="pl-2 text-gray-700 font-medium">
-                      Pay
+                      Name
+                    </legend>
+                    <input
+                      type="text"
+                      value={input1}
+                      onChange={(e) => setInput1(e.target.value)}
+                      className="block w-full px-3 py-1 focus:outline-none "
+                    />
+                  </fieldset>
+                  <fieldset className="border border-gray-300 rounded-md shadow-sm">
+                    <legend className="pl-2 text-gray-700 font-medium">
+                      Adress
+                    </legend>
+                    <input
+                      type="text"
+                      value={input2}
+                      onChange={(e) => setInput2(e.target.value)}
+                      className="block w-full px-3 py-1 focus:outline-none "
+                    />
+                  </fieldset>
+                  <fieldset className="border border-gray-300 rounded-md shadow-sm">
+                    <legend className="pl-2 text-gray-700 font-medium">
+                      Phone
                     </legend>
                     <input
                       type="number"
-                      onChange={(e) => setInputPay(e.target.value)}
+                      value={input3}
+                      onChange={(e) => setInput3(e.target.value)}
                       className="block w-full px-3 py-1 focus:outline-none "
                     />
                   </fieldset>

@@ -1,30 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Nav from "../component/Nav";
-import img from "../../image/pngwing.com.png";
-import Image from "next/image";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { checkTokenExpiration } from "../fun/tokenAccess";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faEye,
-  faPenToSquare,
-  faTrash,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { mainUrl } from "../api";
 
 export default function page() {
   const token = Cookies.get("authToken");
   const [isOpen, setIsOpen] = useState(false);
-  const [isName, setisName] = useState(false);
-  const [isQ, setIsQ] = useState(false);
-  const [isPrice, setisPrice] = useState(false);
-  const [minQ, setMinQ] = useState(0);
-  const [maxQ, setMaxQ] = useState("");
-  const [minP, setMinP] = useState(0);
-  const [maxP, setMaxP] = useState("");
   const [nameS, setnameS] = useState("");
   const [input1, setInput1] = useState("");
   const [input2, setInput2] = useState("");
@@ -37,7 +25,7 @@ export default function page() {
 
   useEffect(() => {
     checkTokenExpiration();
-    // showData();
+    showData();
   }, []);
 
   const togglePopup = () => {
@@ -45,26 +33,43 @@ export default function page() {
     setIsOpen(!isOpen);
   };
 
-  const togellUpdate = (nameE, id) => {
-    console.log(nameE);
+  const showData = () => {
+    const token = Cookies.get("authToken");
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const url = `${mainUrl}/repairs`;
+
+    axios
+      .get(url, config)
+      .then((res) => {
+        setList(res.data.data);
+        console.log(res.data.data);
+        setListFilter(res.data.data);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const togellUpdate = (id) => {
     setUpdate(!update);
     setIsOpen(!isOpen);
     setId(id);
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const urlS = `https://electronics-backend-production.up.railway.app/api/parts`;
+    const urlS = `${mainUrl}/repairs`;
 
     axios
       .get(urlS, config)
       .then((res) => {
         console.log(res.data);
-        let test = res.data.data.filter((item) => item.name == nameE);
+        let test = res.data.data.filter((item) => item._id == id);
         console.log(test);
-        setInput1(test[0].name);
-        setInput2(test[0].quantity);
-        setInput3(test[0].purchasePrice);
-        setInput4(test[0].sellingPrice);
+        setInput1(test[0].customerName);
+        setInput2(test[0].mobile);
+        setInput3(test[0].issue);
       })
       .catch((error) => {
         console.log(error);
@@ -72,75 +77,85 @@ export default function page() {
   };
 
   const handleSubmit = () => {
-    //     const config = {
-    //       headers: { Authorization: `Bearer ${token}` },
-    //     };
-    //     if (!update) {
-    //       const url =
-    //         "https://electronics-backend-production.up.railway.app/api/parts";
-    //       axios
-    //         .post(
-    //           url,
-    //           {
-    //             name: input1,
-    //             quantity: input2,
-    //             purchasePrice: input3,
-    //             sellingPrice: input4,
-    //           },
-    //           config
-    //         )
-    //         .then(() => {
-    //           showData();
-    //           togglePopup();
-    //           scroll({
-    //             top: document.body.scrollHeight,
-    //             behavior: "smooth",
-    //           });
-    //         })
-    //         .catch((error) => {
-    //           console.log(error);
-    //           toast.error("Added Error");
-    //         });
-    //     } else {
-    //       console.log("up");
-    //       const url = `https://electronics-backend-production.up.railway.app/api/parts/${id}`;
-    //       axios
-    //         .put(
-    //           url,
-    //           {
-    //             name: input1,
-    //             quantity: input2,
-    //             purchasePrice: input3,
-    //             sellingPrice: input4,
-    //           },
-    //           config
-    //         )
-    //         .then(() => {
-    //           showData();
-    //           togglePopup();
-    //         })
-    //         .catch((error) => {
-    //           console.log(error);
-    //           toast.error(error);
-    //         });
-    //     }
-    //   };
-    //   const handellDelete = (id) => {
-    //     const token = Cookies.get("authToken");
-    //     const config = {
-    //       headers: { Authorization: `Bearer ${token}` },
-    //     };
-    //     const url = `https://electronics-backend-production.up.railway.app/api/parts/${id}`;
-    //     axios
-    //       .delete(url, config)
-    //       .then((res) => {
-    //         showData();
-    //         toast(res);
-    //       })
-    //       .catch((error) => {
-    //         console.log(error);
-    //         toast.error(error);
-    //       });
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    if (!update) {
+      const url = `${mainUrl}/repairs`;
+      axios
+        .post(
+          url,
+          {
+            customerName: input1,
+            mobile: input2,
+            issue: input3,
+            deliveryDate: input4,
+          },
+          config
+        )
+        .then(() => {
+          showData();
+          togglePopup();
+          scroll({
+            top: document.body.scrollHeight,
+            behavior: "smooth",
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error("Added Error");
+        });
+    } else {
+      console.log("up");
+      const url = `${mainUrl}/repairs/${id}`;
+      axios
+        .put(
+          url,
+          {
+            customerName: input1,
+            mobile: input2,
+            issue: input3,
+            deliveryDate: input4,
+          },
+          config
+        )
+        .then(() => {
+          showData();
+          togglePopup();
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error(error);
+        });
+    }
+  };
+  const handellDelete = (id) => {
+    const token = Cookies.get("authToken");
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+    const url = `${mainUrl}/repairs/${id}`;
+    axios
+      .delete(url, config)
+      .then((res) => {
+        showData();
+        toast(res);
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error(error);
+      });
+  };
+
+  const search = (e) => {
+    setListFilter([]);
+    let array = [];
+    for (let i = 0; i < list.length; i++) {
+      if (list[i].customerName.toLowerCase().includes(e.toLowerCase())) {
+        array = [...array, list[i]];
+      }
+    }
+    setListFilter(array);
   };
 
   return (
@@ -155,7 +170,7 @@ export default function page() {
           value={nameS}
           onChange={(e) => {
             setnameS(e.target.value);
-            handleSubmitSearch(0, e.target.value);
+            search(e.target.value);
           }}
           className=" block w-full px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-all"
         />
@@ -168,106 +183,43 @@ export default function page() {
           <p className="w-[20%] text-center">Delivery</p>
           <p className="w-[20%] text-center">procedures</p>
         </div>
-        <div className="flex items-center py-[10px] max-sm:text-[11px] text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950">
-          <p className="w-[20%] text-center overflow-x-auto">ahmed</p>
-          <p className="w-[20%] text-center overflow-x-auto">0123456789</p>
-          <p className="w-[20%] text-center overflow-x-auto">no power</p>
-          <p className="w-[20%] text-center overflow-x-auto">12/5/2024</p>
-          <p className="w-[20%] flex justify-around">
-            <FontAwesomeIcon
-              icon={faPenToSquare}
-              className="text-[20px] hover:scale-[105%] transition-all cursor-pointer max-sm:text-[15px]"
-            />
-            <FontAwesomeIcon
-              icon={faEye}
-              className="text-[20px] hover:scale-[105%] transition-all cursor-pointer max-sm:text-[15px]"
-            />
-            <FontAwesomeIcon
-              icon={faTrash}
-              className="text-[20px] hover:text-red-600 transition-all text-red-400 cursor-pointer max-sm:text-[15px]"
-            />
-          </p>
-        </div>
-        <div className="flex items-center py-[10px] max-sm:text-[11px] text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950">
-          <p className="w-[20%] text-center overflow-x-auto">ahmed</p>
-          <p className="w-[20%] text-center overflow-x-auto">0123456789</p>
-          <p className="w-[20%] text-center overflow-x-auto">no power</p>
-          <p className="w-[20%] text-center overflow-x-auto">12/5/2024</p>
-          <p className="w-[20%] flex justify-around">
-            <FontAwesomeIcon
-              icon={faPenToSquare}
-              className="text-[20px] hover:scale-[105%] transition-all cursor-pointer"
-            />
-            <FontAwesomeIcon
-              icon={faEye}
-              className="text-[20px] hover:scale-[105%] transition-all cursor-pointer"
-            />
-            <FontAwesomeIcon
-              icon={faTrash}
-              className="text-[20px] hover:text-red-600 transition-all text-red-400 cursor-pointer"
-            />
-          </p>
-        </div>
-        <div className="flex items-center py-[10px] max-sm:text-[11px] text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950">
-          <p className="w-[20%] text-center overflow-x-auto">ahmed</p>
-          <p className="w-[20%] text-center overflow-x-auto">0123456789</p>
-          <p className="w-[20%] text-center overflow-x-auto">no power</p>
-          <p className="w-[20%] text-center overflow-x-auto">12/5/2024</p>
-          <p className="w-[20%] flex justify-around">
-            <FontAwesomeIcon
-              icon={faPenToSquare}
-              className="text-[20px] hover:scale-[105%] transition-all cursor-pointer"
-            />
-            <FontAwesomeIcon
-              icon={faEye}
-              className="text-[20px] hover:scale-[105%] transition-all cursor-pointer"
-            />
-            <FontAwesomeIcon
-              icon={faTrash}
-              className="text-[20px] hover:text-red-600 transition-all text-red-400 cursor-pointer"
-            />
-          </p>
-        </div>
-        <div className="flex items-center py-[10px] max-sm:text-[11px] text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950">
-          <p className="w-[20%] text-center overflow-x-auto">ahmed</p>
-          <p className="w-[20%] text-center overflow-x-auto">0123456789</p>
-          <p className="w-[20%] text-center overflow-x-auto">no power</p>
-          <p className="w-[20%] text-center overflow-x-auto">12/5/2024</p>
-          <p className="w-[20%] flex justify-around">
-            <FontAwesomeIcon
-              icon={faPenToSquare}
-              className="text-[20px] hover:scale-[105%] transition-all cursor-pointer"
-            />
-            <FontAwesomeIcon
-              icon={faEye}
-              className="text-[20px] hover:scale-[105%] transition-all cursor-pointer"
-            />
-            <FontAwesomeIcon
-              icon={faTrash}
-              className="text-[20px] hover:text-red-600 transition-all text-red-400 cursor-pointer"
-            />
-          </p>
-        </div>
-        <div className="flex items-center py-[10px] max-sm:text-[11px] text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950">
-          <p className="w-[20%] text-center overflow-x-auto">ahmed</p>
-          <p className="w-[20%] text-center overflow-x-auto">0123456789</p>
-          <p className="w-[20%] text-center overflow-x-auto">no power</p>
-          <p className="w-[20%] text-center overflow-x-auto">12/5/2024</p>
-          <p className="w-[20%] flex justify-around">
-            <FontAwesomeIcon
-              icon={faPenToSquare}
-              className="text-[20px] hover:scale-[105%] transition-all cursor-pointer"
-            />
-            <FontAwesomeIcon
-              icon={faEye}
-              className="text-[20px] hover:scale-[105%] transition-all cursor-pointer"
-            />
-            <FontAwesomeIcon
-              icon={faTrash}
-              className="text-[20px] hover:text-red-600 transition-all text-red-400 cursor-pointer"
-            />
-          </p>
-        </div>
+        {listFilter.length ? (
+          listFilter.map((item) => {
+            return (
+              <div
+                key={item._id}
+                className="flex items-center py-[10px] max-sm:text-[11px] text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950"
+              >
+                <p className="w-[20%] text-center overflow-x-auto">
+                  {item.customerName}
+                </p>
+                <p className="w-[20%] text-center overflow-x-auto">
+                  {item.mobile}
+                </p>
+                <p className="w-[20%] text-center overflow-x-auto">
+                  {item.issue}
+                </p>
+                <p className="w-[20%] text-center overflow-x-auto">
+                  {item.deliveryDate.slice(0, 10)}
+                </p>
+                <p className="w-[20%] flex justify-around">
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    onClick={() => togellUpdate(item._id)}
+                    className="text-[20px] hover:scale-[105%] transition-all cursor-pointer max-sm:text-[15px]"
+                  />
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    onClick={() => handellDelete(item._id)}
+                    className="text-[20px] hover:text-red-600 transition-all text-red-400 cursor-pointer max-sm:text-[15px]"
+                  />
+                </p>
+              </div>
+            );
+          })
+        ) : (
+          <p>no repairs</p>
+        )}
       </div>
       <div
         onClick={togglePopup}
@@ -316,6 +268,16 @@ export default function page() {
                       type="text"
                       value={input3}
                       onChange={(e) => setInput3(e.target.value)}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="text-gray-700">deliveryDate:</span>
+                    <input
+                      type="date"
+                      value={input4}
+                      onChange={(e) => setInput4(e.target.value)}
                       className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                     />
                   </label>

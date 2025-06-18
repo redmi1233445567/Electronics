@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { toast, ToastContainer } from "react-toastify";
 import PupupInvo from "@/app/component/PupupInvo";
 import Link from "next/link";
+import { mainUrl } from "@/app/api";
 
 export default function Content({ id }) {
   let list = [];
@@ -43,29 +44,21 @@ export default function Content({ id }) {
   };
 
   const filterData = () => {
-    console.log(input1);
-    console.log(input2);
-    const token = Cookies.get("authToken");
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-    const url = `https://electronics-backend-production.up.railway.app/api/technicians/invoices/filter?startDate=${input1}&endDate=${input2}`;
-
-    axios
-      .get(url, config)
-      .then((res) => {
-        if (res.data.length == 0) {
-          setInvo([]);
-        } else {
-          console.log(res.data.length == 0);
-          setInvo(
-            res.data.filter((item) => item.name == oneTech[0].name)[0].invoices
-          );
+    let arr = [];
+    for (let i = 0; i < invo.length; i++) {
+      if (input1 <= input2) {
+        if (
+          invo[i].date.slice(0, 10) <= input2 &&
+          invo[i].date.slice(0, 10) >= input1
+        ) {
+          arr.push(invo[i]);
         }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
+        setInvo(arr);
+      } else {
+        toast.error("change the from date");
+        break;
+      }
+    }
   };
 
   const reFilter = () => {
@@ -77,7 +70,7 @@ export default function Content({ id }) {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const url = `https://electronics-backend-production.up.railway.app/api/technicians`;
+    const url = `${mainUrl}/technicians`;
 
     axios
       .get(url, config)
@@ -100,7 +93,7 @@ export default function Content({ id }) {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const url = `https://electronics-backend-production.up.railway.app/api/technicians/${oneTech[0]._id}/pay`;
+    const url = `${mainUrl}/technicians/${oneTech[0]._id}/pay`;
 
     axios
       .post(
@@ -128,7 +121,7 @@ export default function Content({ id }) {
             Technician: {oneTech[0].name}
           </h1>
           <p>Phone: {oneTech[0].phone}</p>
-          <p>address: {oneTech[0].address}</p>
+          <p>address: {oneTech[0].email}</p>
           <p>Total amount due: {oneTech[0].totalDueAmount}</p>
           <div className="flex justify-between items-center my-[30px]">
             <div
@@ -193,20 +186,56 @@ export default function Content({ id }) {
                 return (
                   <div
                     key={item._id}
-                    className="flex items-center max-sm:text-[11px] text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950"
+                    className="flex flex-col items-center max-sm:text-[11px] text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950"
                   >
-                    <p className="w-[15%] text-center">{item.partName}</p>
-                    <p className="w-[15%] text-center">{item.quantity}</p>
-                    <p className="w-[15%] text-center">{item.price}</p>
-                    <p className="w-[15%] text-center overflow-x-auto">
-                      {item.date}
-                    </p>
-                    <p className="w-[15%] text-center text-green-600">
-                      {item.paidAmount}
-                    </p>
-                    <p className="w-[15%] text-center text-red-600">
-                      {item.remainingAmount}
-                    </p>
+                    {item.items.length ? (
+                      item.items.map((row, ind) => {
+                        return (
+                          <div
+                            key={ind}
+                            className="flex w-full justify-between items-center"
+                          >
+                            <p className="w-[15%] text-center">
+                              {row.partName}
+                            </p>
+                            <p className="w-[15%] text-center">
+                              {row.quantity}
+                            </p>
+                            <p className="w-[15%] text-center">{row.price}</p>
+                            <p className="w-[15%] text-center overflow-x-auto">
+                              {item.date.slice(0, 10)}
+                            </p>
+                            <p className="w-[15%] text-center text-green-600">
+                              {row.paidAmount}
+                            </p>
+                            <p className="w-[15%] text-center text-red-600">
+                              {row.remainingAmount}
+                            </p>
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <div className="flex w-full justify-between items-center">
+                        <p className="w-[15%] text-center">
+                          {item.items[0].partName}
+                        </p>
+                        <p className="w-[15%] text-center">
+                          {item.items[0].quantity}
+                        </p>
+                        <p className="w-[15%] text-center">
+                          {item.items[0].price}
+                        </p>
+                        <p className="w-[15%] text-center overflow-x-auto">
+                          {item.date.slice(0, 10)}
+                        </p>
+                        <p className="w-[15%] text-center text-green-600">
+                          {item.items[0].paidAmount}
+                        </p>
+                        <p className="w-[15%] text-center text-red-600">
+                          {item.items[0].remainingAmount}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 );
               })
@@ -278,6 +307,7 @@ export default function Content({ id }) {
           className="font-bold max-md:right-[30px] max-md:bottom-[30px] rotate-180 max-md:text-[30px] hover:scale-[110%] transition-all text-[50px] text-blue-600  fixed cursor-pointer right-[100px] bottom-[100px]"
         />
       </Link>
+      {/* <div onClick={test}>test</div> */}
       <ToastContainer />
     </div>
   );

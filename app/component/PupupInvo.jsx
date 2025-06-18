@@ -5,6 +5,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import React, { useEffect, useReducer, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
+import { mainUrl } from "../api";
 
 export default function PupupInvo({ togglePopupAdd, id, showData }) {
   const [PartList, setPartList] = useState(["z", "v", "h"]);
@@ -32,7 +33,7 @@ export default function PupupInvo({ togglePopupAdd, id, showData }) {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const url = `https://electronics-backend-production.up.railway.app/api/parts`;
+    const url = `${mainUrl}/parts`;
 
     axios
       .get(url, config)
@@ -83,7 +84,7 @@ export default function PupupInvo({ togglePopupAdd, id, showData }) {
   const deleteOne = (idd) => {
     let newArray = [];
     for (let i = 0; i < allInvoices[0].items.length; i++) {
-      if (allInvoices[0].items[i].partId != idd) {
+      if (i != idd) {
         newArray.push(allInvoices[0].items[i]);
       }
     }
@@ -103,7 +104,7 @@ export default function PupupInvo({ togglePopupAdd, id, showData }) {
       const config = {
         headers: { Authorization: `Bearer ${token}` },
       };
-      const url = `https://electronics-backend-production.up.railway.app/api/technicians/${id}/invoices`;
+      const url = `${mainUrl}/technicians/${id}/invoices`;
 
       axios
         .post(url, allInvoices[0], config)
@@ -203,9 +204,9 @@ export default function PupupInvo({ togglePopupAdd, id, showData }) {
               <p className="w-[15%] text-center">delete</p>
             </div>
             {allInvoices[0].items.length ? (
-              allInvoices[0].items.map((item) => {
+              allInvoices[0].items.map((item, ind) => {
                 return (
-                  <div key={item.partId}>
+                  <div key={ind}>
                     <div className="flex items-center text-[14px] hover:bg-blue-200  transition-all w-full mb-2 justify-between bg-blue-300 border-[1px] border-blue-950 rounded-lg text-blue-950">
                       <p className="w-[15%] text-center">{item.partName}</p>
                       <p className="w-[15%] text-center">{item.quantity}</p>
@@ -218,7 +219,7 @@ export default function PupupInvo({ togglePopupAdd, id, showData }) {
                       </p>
                       <FontAwesomeIcon
                         icon={faTrashCan}
-                        onClick={() => deleteOne(item.partId)}
+                        onClick={() => deleteOne(ind)}
                         className="text-red-600 w-[15%] text-center cursor-pointer"
                       />
                     </div>

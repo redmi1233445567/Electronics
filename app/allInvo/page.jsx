@@ -6,6 +6,7 @@ import { checkTokenExpiration } from "../fun/tokenAccess";
 import Nav from "../component/Nav";
 import { faFileExcel, faFilePdf } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { mainUrl } from "../api";
 
 export default function page() {
   const [list, setList] = useState([]);
@@ -20,7 +21,7 @@ export default function page() {
     const config = {
       headers: { Authorization: `Bearer ${token}` },
     };
-    const urlS = `https://electronics-backend-production.up.railway.app/api/technicians`;
+    const urlS = `${mainUrl}/technicians`;
 
     axios
       .get(urlS, config)
@@ -39,21 +40,17 @@ export default function page() {
     try {
       let urll;
       if (e == 0) {
-        urll =
-          "https://electronics-backend-production.up.railway.app/api/technicians/export/pdf";
+        urll = `${mainUrl}/technicians/export/pdf`;
       } else if (e == 1) {
-        urll =
-          "https://electronics-backend-production.up.railway.app/api/technicians/export/excel";
+        urll = `${mainUrl}/technicians/export/excel`;
       } else if (e == 2) {
-        urll =
-          "https://electronics-backend-production.up.railway.app/api/technicians/invoices/export/pdf";
+        urll = `${mainUrl}/technicians/invoices/export/pdf`;
       } else {
-        urll =
-          "https://electronics-backend-production.up.railway.app/api/technicians/invoices/export/excel";
+        urll = `${mainUrl}/technicians/invoices/export/excel`;
       }
       const response = await axios({
         method: "GET",
-        proxy: "https://electronics-backend-production.up.railway.app",
+        proxy: `${mainUrl}`,
         url: urll,
         responseType: "blob",
         headers: { Authorization: `Bearer ${token}` },
@@ -64,10 +61,8 @@ export default function page() {
       const link = document.createElement("a");
       link.href = url;
       if (
-        urll ==
-          "https://electronics-backend-production.up.railway.app/api/technicians/invoices/export/excel" ||
-        urll ==
-          "https://electronics-backend-production.up.railway.app/api/technicians/export/excel"
+        urll == `${mainUrl}/technicians/invoices/export/excel` ||
+        urll == `${mainUrl}/technicians/export/excel`
       ) {
         link.setAttribute("download", "invoice.xlsx");
       } else {
@@ -129,17 +124,23 @@ export default function page() {
                         {item.name}
                       </h2>
                       <div className="flex items-center text-[14px] max-sm:text-[11px] flex-2/3  justify-between ">
-                        <p className="w-[15%] text-center">{inv.partName}</p>
-                        <p className="w-[15%] text-center">{inv.quantity}</p>
-                        <p className="w-[15%] text-center">{inv.price}</p>
+                        <p className="w-[15%] text-center">
+                          {inv.items[0].partName}
+                        </p>
+                        <p className="w-[15%] text-center">
+                          {inv.items[0].quantity}
+                        </p>
+                        <p className="w-[15%] text-center">
+                          {inv.items[0].price}
+                        </p>
                         <p className="w-[15%] text-center overflow-x-auto ">
                           {inv.date}
                         </p>
                         <p className="w-[15%] text-center text-green-600">
-                          {inv.paidAmount}
+                          {inv.items[0].paidAmount}
                         </p>
                         <p className="w-[15%] text-center text-red-600">
-                          {inv.remainingAmount}
+                          {inv.items[0].remainingAmount}
                         </p>
                       </div>
                     </div>
