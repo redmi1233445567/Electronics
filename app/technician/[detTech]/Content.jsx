@@ -84,6 +84,9 @@ export default function Content({ id }) {
         console.log(error);
       });
   };
+  const test = () => {
+    console.log(oneTech);
+  };
 
   const pay = (e) => {
     e.preventDefault();
@@ -307,7 +310,6 @@ export default function Content({ id }) {
           className="font-bold max-md:right-[30px] max-md:bottom-[30px] rotate-180 max-md:text-[30px] hover:scale-[110%] transition-all text-[50px] text-blue-600  fixed cursor-pointer right-[100px] bottom-[100px]"
         />
       </Link>
-      {/* <div onClick={test}>test</div> */}
       <ToastContainer />
     </div>
   );

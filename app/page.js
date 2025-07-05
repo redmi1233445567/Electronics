@@ -1,60 +1,114 @@
 "use client";
-import Nav from "./component/Nav";
-import Cookies from "js-cookie";
-import img2 from "../image/pngwing.com (1).png";
-import img1 from "../image/pngwing.com (2).png";
-import img3 from "../image/pngwing.com (3).png";
 import Image from "next/image";
+import React, { useRef } from "react";
+import img from "../image/pngwing.com.png";
+import { ToastContainer, toast } from "react-toastify";
+import axios from "axios";
+import Cookies from "js-cookie";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faMobileScreen,
-  faPerson,
-  faScrewdriver,
-  faScrewdriverWrench,
-} from "@fortawesome/free-solid-svg-icons";
+import { mainUrl } from "./api";
 
-export default function Home() {
-  const token = Cookies.get("authToken");
+export default function page() {
+  const name = useRef();
+  const pass = useRef();
   const router = useRouter();
-  const list = [
-    { name: "Parts", img: faMobileScreen },
-    { name: "Accessories", img: faScrewdriver },
-    { name: "Technician", img: faPerson },
-    { name: "Repair", img: faScrewdriverWrench },
-  ];
 
-  const goTo = (e) => {
-    for (let i = 0; i < list.length; i++) {
-      if (e == list[i].name) {
-        router.push(`/${list[i].name.toLowerCase()}`);
-      }
+  const handellLogin = () => {
+    const userName = name.current.value;
+    const password = pass.current.value;
+    const url = `${mainUrl}/auth/login`;
+    if (userName == "" || password == "") {
+      toast.error("Enter your username and password.");
+    } else {
+      axios
+        .post(url, {
+          username: userName,
+          password: password,
+        })
+        .then((res) => {
+          Cookies.set("authToken", res.data.token);
+          router.push("/home");
+          console.log(res);
+        })
+        .catch(() => {
+          toast.error("Password or User Name is Wrong");
+        });
     }
   };
 
   return (
     <div className=" h-full relative w-full">
-      <Nav />
-      <section className="h-full ">
-        <div className="h-full flex items-center justify-center flex-wrap pt-[100px] max-md:pt-[150px] gap-[20px]">
-          {list.map((item, ind) => {
-            return (
-              <div
-                key={ind}
-                className="hover:scale-[110%] flex flex-col justify-around bg-white shadow transition-all cursor-pointer hover:shadow-lg rounded-2xl p-[20px] w-[250px] h-[300px]"
-                onClick={() => goTo(item.name)}
-              >
-                <FontAwesomeIcon
-                  className="text-[100px] text-blue-950"
-                  icon={item.img}
-                />
-                <p className="text-center text-[28px] text-blue-600 font-bold">
-                  {item.name}
-                </p>
-              </div>
-            );
-          })}
+      {/* Login Section */}
+      <section className="w-full flex h-full items-center p-[30px]">
+        <div className="w-[50%] max-md:w-full md:pr-[20px] h-full flex flex-col justify-center items-center">
+          <div className="flex  items-center flex-col text-[30px] font-serif font-extrabold text-blue-600 w-full mt-[-50px] mb-[50px]">
+            <p className="mb-[-15px]">{"{>>}"}</p>
+            <p>Electronice</p>
+          </div>
+          <h2 className="text-2xl font-semibold mb-6 text-center">
+            Welcome back! Please Add Your Acount
+          </h2>
+
+          {/* Email Input */}
+          <div className="mb-4 w-full">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700"
+            >
+              User Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              ref={name}
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-700 focus:bg-blue-500/10"
+            />
+          </div>
+
+          {/* Password Input */}
+          <div className="mb-4 w-full">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              ref={pass}
+              placeholder="Your Password..."
+              className="mt-1 block w-full text-gray-700 focus:bg-blue-500/10 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          {/* Login & Sign Up Buttons */}
+          <button
+            type="submit"
+            onClick={handellLogin}
+            className="w-[50%] font-bold text-blue-600 py-2 px-4 cursor-pointer rounded-md hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 border-[1px] border-blue-600"
+          >
+            Login
+          </button>
+          <p className="text-gray-500 mt-4">I don't have an account</p>
+          <Link href={"../register"} className="w-[50%]">
+            <button
+              type="button"
+              className="w-full font-bold text-green-600 py-2 px-4 mt-4 cursor-pointer rounded-md hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 border-[1px] border-green-600"
+            >
+              Register
+            </button>
+          </Link>
         </div>
+        <div className=" w-[50%] h-full flex justify-center items-center max-md:hidden rounded-md  bg-white">
+          <Image
+            src={img}
+            alt="Picture of the author"
+            className="w-[500px] h-[500px]"
+          />
+        </div>4
+        <ToastContainer />
       </section>
     </div>
   );

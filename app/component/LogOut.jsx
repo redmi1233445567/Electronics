@@ -16,11 +16,11 @@ export default function LogOut({ open }) {
   return (
     <div
       onClick={handellLogOut}
-      className="hover:text-red-700 p-[10px] rounded-md cursor-pointer hover:scale-[108%] md:absolute bottom-0  transition-all flex items-center  gap-[20px]"
+      className="hover:text-red-700 p-[10px] rounded-md cursor-pointer hover:scale-[108%] xl:absolute bottom-0  transition-all flex items-center  gap-[20px]"
     >
       <FontAwesomeIcon
         icon={faRightFromBracket}
-        className="max-md:translate-y-[5px]"
+        className="max-xl:translate-y-[5px]"
       />
       <p className={`${open ? "block" : "hidden"} text-red-600`}>Log out</p>
     </div>

@@ -68,7 +68,7 @@ export default function PupupInvo({ togglePopupAdd, id, showData }) {
         partId: idPart,
         partName: inputPart,
         quantity: inputQ,
-        price: inputPr * inputQ,
+        price: inputPr,
         paidAmount: inputPa,
         remainingAmount: inputPr * inputQ - inputPa,
       };
@@ -100,6 +100,7 @@ export default function PupupInvo({ togglePopupAdd, id, showData }) {
     console.log(allInvoices);
     console.log(id);
     if (allInvoices[0].items.length) {
+      console.log(allInvoices[0]);
       const token = Cookies.get("authToken");
       const config = {
         headers: { Authorization: `Bearer ${token}` },

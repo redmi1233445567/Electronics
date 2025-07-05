@@ -15,8 +15,9 @@ import { toast, ToastContainer } from "react-toastify";
 import Link from "next/link";
 import PupupInvo from "../component/PupupInvo";
 import { mainUrl } from "../api";
+import { motion, AnimatePresence } from "framer-motion";
 
-export default function page() {
+export default function Page() {
   const [list, setList] = useState([]);
   const [listFilter, setListFilter] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -48,13 +49,14 @@ export default function page() {
 
   const togglePopupEdit = (id) => {
     setIsOpenEdit(!isOpenEdit);
-    if (payId == "") {
+    if (!payId) {
       setPayId(id);
-      let oneTech = list.filter((item) => item._id == id);
-      setInput1(oneTech[0].name);
-      setInput2(oneTech[0].email);
-      setInput3(oneTech[0].phone);
-      console.log(oneTech);
+      let oneTech = list.find((item) => item._id == id);
+      if (oneTech) {
+        setInput1(oneTech.name);
+        setInput2(oneTech.email);
+        setInput3(oneTech.phone);
+      }
     } else {
       setPayId("");
       setInput1("");
@@ -66,384 +68,305 @@ export default function page() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const token = Cookies.get("authToken");
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
+    const config = { headers: { Authorization: `Bearer ${token}` } };
     const urlS = `${mainUrl}/technicians`;
 
-    if (input1 == "" || input3 == "") {
+    if (!input1 || !input3) {
       toast.error("Enter Name and Phone");
     } else {
       axios
-        .post(
-          urlS,
-          {
-            name: input1,
-            email: input2,
-            phone: input3,
-          },
-          config
-        )
-        .then((res) => {
+        .post(urlS, { name: input1, email: input2, phone: input3 }, config)
+        .then(() => {
           showData();
           togglePopup();
           setInput1("");
           setInput2("");
           setInput3("");
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch(console.error);
     }
-  };
-
-  const search = (e) => {
-    setListFilter([]);
-    let array = [];
-    for (let i = 0; i < list.length; i++) {
-      if (list[i].name.toLowerCase().includes(e.toLowerCase())) {
-        array = [...array, list[i]];
-      }
-    }
-    setListFilter(array);
-  };
-
-  const showData = () => {
-    const token = Cookies.get("authToken");
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-    const urlS = `${mainUrl}/technicians`;
-
-    axios
-      .get(urlS, config)
-      .then((res) => {
-        console.log(res.data);
-        setList(res.data.data);
-        setListFilter(res.data.data);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
-
-  const deleteItem = (id) => {
-    const token = Cookies.get("authToken");
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
-    const urlS = `${mainUrl}/technicians/${id}`;
-
-    axios
-      .delete(urlS, config)
-      .then((res) => {
-        console.log(res);
-        setListFilter([]);
-        let array = [];
-        for (let i = 0; i < list.length; i++) {
-          if (list[i]._id != id) {
-            array = [...array, list[i]];
-          }
-        }
-        setListFilter(array);
-        setList(listFilter);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
   };
 
   const pay = (e) => {
     e.preventDefault();
     const token = Cookies.get("authToken");
-    const config = {
-      headers: { Authorization: `Bearer ${token}` },
-    };
+    const config = { headers: { Authorization: `Bearer ${token}` } };
     const urlS = `${mainUrl}/technicians/${payId}`;
 
-    if (input1 == "" || input3 == "") {
+    if (!input1 || !input3) {
       toast.error("Enter Name and Phone");
     } else {
       axios
-        .put(
-          urlS,
-          {
-            name: input1,
-            email: input2,
-            phone: input3,
-          },
-          config
-        )
-        .then((res) => {
+        .put(urlS, { name: input1, email: input2, phone: input3 }, config)
+        .then(() => {
           showData();
           setInput1("");
           setInput2("");
           setInput3("");
           togglePopupEdit();
         })
-        .catch((error) => {
-          console.log(error);
-        });
+        .catch(console.error);
     }
   };
 
+  const deleteItem = (id) => {
+    const token = Cookies.get("authToken");
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const urlS = `${mainUrl}/technicians/${id}`;
+
+    axios
+      .delete(urlS, config)
+      .then(() => {
+        const updatedList = list.filter((item) => item._id !== id);
+        setList(updatedList);
+        setListFilter(updatedList);
+      })
+      .catch(console.error);
+  };
+
+  const search = (e) => {
+    const query = e.toLowerCase();
+    const filtered = list.filter((item) =>
+      item.name.toLowerCase().includes(query)
+    );
+    setListFilter(filtered);
+  };
+
+  const showData = () => {
+    const token = Cookies.get("authToken");
+    const config = { headers: { Authorization: `Bearer ${token}` } };
+    const urlS = `${mainUrl}/technicians`;
+
+    axios
+      .get(urlS, config)
+      .then((res) => {
+        setList(res.data.data);
+        setListFilter(res.data.data);
+      })
+      .catch(console.error);
+  };
+
   return (
-    <div className="pt-[150px] pb-[50px] md:px-[150px] max-sm:px-[30px]">
+    <div className="pt-32 px-4 md:px-24 bg-white min-h-screen">
       <Nav />
-      <h1 className="text-[32px] text-center mb-5 font-bold text-blue-600 w-fit px-[20px] py-[10px] border-[1px] border-blue-600  mx-auto bg-white rounded-md">
-        Technician
+      <h1 className="text-3xl font-bold text-center text-blue-600 bg-blue-50 py-4 rounded-xl shadow mb-8">
+        Technician Dashboard
       </h1>
-      <div className="flex  mb-[30px] gap-2 justify-between w-full max-md:justify-center items-center text-[20px] flex-wrap">
-        <div className="flex gap-[10px]">
-          <input
-            type="text"
-            onChange={(e) => search(e.target.value)}
-            placeholder="Search by name"
-            className=" block px-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-        <Link href={"/allInvo"}>
-          <div className="text-blue-600 text-[24px] font-bold hover:scale-105 transition-all ">
-            All Incoices
-          </div>
+      <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+        <input
+          type="text"
+          onChange={(e) => search(e.target.value)}
+          placeholder="Search technician..."
+          className="flex-1 px-4 py-2 border border-blue-200 rounded-md shadow-sm focus:ring-2 focus:ring-blue-400"
+        />
+        <Link
+          href="/allInvo"
+          className="text-blue-600 font-medium hover:underline"
+        >
+          View All Invoices
         </Link>
       </div>
-      <table className="w-[100%] max-sm:w-[90%]  max-sm:text-[13px] max-md:block max-md:overflow-auto">
-        <thead>
-          <tr className="text-blue-600">
-            <th>name</th>
-            <th>invoices</th>
-            <th>procedures</th>
-          </tr>
-        </thead>
-        <tbody>
-          {listFilter.length ? (
-            listFilter.map((li) => {
-              return (
-                <tr
-                  key={li._id}
-                  className="border-b-[1px] border-b-gray-200 hover:bg-blue-100 transition-all pb-[30px]"
-                >
-                  <td className="font-bold text-[24px] max-sm:text-[18px] w-[200px] text-center">
-                    {li.name}
-                  </td>
-                  <td className="  min-w-[300px]">
-                    {li.invoices.length ? (
-                      <table className="w-full mx-auto overflow-auto">
-                        <thead>
-                          <tr>
-                            <th>name</th>
-                            <th>quantity</th>
-                            <th>price</th>
-                            <th>Rprice</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {li.invoices.length ? (
-                            li.invoices.map((item) => {
-                              return (
-                                <tr key={item._id}>
-                                  <td className="text-center w-[40%]">
-                                    {item.items[0].partName}
-                                  </td>
-                                  <td className="text-center w-[20%]">
-                                    {item.items[0].quantity}
-                                  </td>
-                                  <td className="text-center w-[20%]">
-                                    {item.items[0].price}
-                                  </td>
-                                  <td className="text-center w-[20%]">
-                                    {item.items[0].remainingAmount}
-                                  </td>
-                                </tr>
-                              );
-                            })
-                          ) : (
-                            <tr>
-                              <td>No invoices</td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                    ) : (
-                      <p>No invoices</p>
-                    )}
-                  </td>
-                  <td className="flex gap-[20px] justify-center items-center">
-                    <FontAwesomeIcon
-                      icon={faPenToSquare}
-                      onClick={() => togglePopupEdit(li._id)}
-                      className="text-[30px] hover:scale-[105%] transition-all cursor-pointer"
-                    />
-                    <Link href={`/technician/${li._id}`}>
-                      <FontAwesomeIcon
-                        icon={faEye}
-                        className="text-[30px] hover:scale-[105%] transition-all cursor-pointer"
-                      />
-                    </Link>
-                    <FontAwesomeIcon
-                      icon={faTrash}
-                      onClick={() => deleteItem(li._id)}
-                      className="text-[30px] hover:text-red-600 transition-all text-red-400 cursor-pointer"
-                    />
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
-            <tr>
-              <td>No technician ...</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
 
-      <div>
-        {/* البوب أب */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {listFilter.length ? (
+          listFilter.map((li) => (
+            <motion.div
+              key={li._id}
+              className="bg-blue-50 border border-blue-100 rounded-lg shadow p-4 transition hover:shadow-lg"
+              whileHover={{ scale: 1.02 }}
+            >
+              <div className="flex justify-between items-center mb-2">
+                <h2 className="text-xl font-semibold text-blue-700">
+                  {li.name}
+                </h2>
+                <div className="flex gap-3 text-lg">
+                  <FontAwesomeIcon
+                    icon={faPenToSquare}
+                    onClick={() => togglePopupEdit(li._id)}
+                    className="text-yellow-500 cursor-pointer hover:scale-110"
+                  />
+                  <Link href={`/technician/${li._id}`}>
+                    <FontAwesomeIcon
+                      icon={faEye}
+                      className="text-blue-500 cursor-pointer hover:scale-110"
+                    />
+                  </Link>
+                  <FontAwesomeIcon
+                    icon={faTrash}
+                    onClick={() => deleteItem(li._id)}
+                    className="text-red-500 cursor-pointer hover:scale-110"
+                  />
+                </div>
+              </div>
+              <details className="group">
+                <summary className="cursor-pointer text-blue-600 hover:underline text-sm">
+                  {li.invoices.length
+                    ? `${li.invoices.length} Invoice(s)`
+                    : "No invoices"}
+                </summary>
+                {li.invoices.length ? (
+                  <div className="mt-2 space-y-1 transition-all ease-in-out">
+                    {li.invoices.map((inv) => (
+                      <div
+                        key={inv._id}
+                        className="text-xs border border-gray-200 p-2 rounded bg-gray-50"
+                      >
+                        <span className="font-semibold">
+                          {inv.items[0].partName}
+                        </span>{" "}
+                        — Qty: {inv.items[0].quantity} — Price:{" "}
+                        {inv.items[0].price} — Remain:{" "}
+                        <span className="text-red-500">
+                          {inv.items[0].remainingAmount}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </details>
+            </motion.div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500 col-span-2">
+            No technicians found...
+          </p>
+        )}
+      </div>
+
+      <AnimatePresence>
         {isOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/20 bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-sm:w-[300px]">
-              <h2 className="text-xl font-bold mb-4">Add a new technician</h2>
+          <motion.div
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-lg shadow-lg p-6 w-96 max-w-full"
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+            >
+              <h2 className="text-xl font-semibold text-blue-600 mb-4">
+                Add Technician
+              </h2>
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/*الاسم*/}
-                <label className="block">
-                  <fieldset className="border border-gray-300 rounded-md shadow-sm">
-                    <legend className="pl-2 text-gray-700 font-medium">
-                      Name
-                    </legend>
-                    <input
-                      type="text"
-                      value={input1}
-                      onChange={(e) => setInput1(e.target.value)}
-                      className="block w-full px-3 py-1 focus:outline-none "
-                    />
-                  </fieldset>
-                  <fieldset className="border border-gray-300 rounded-md shadow-sm">
-                    <legend className="pl-2 text-gray-700 font-medium">
-                      Adress
-                    </legend>
-                    <input
-                      type="text"
-                      value={input2}
-                      onChange={(e) => setInput2(e.target.value)}
-                      className="block w-full px-3 py-1 focus:outline-none "
-                    />
-                  </fieldset>
-                  <fieldset className="border border-gray-300 rounded-md shadow-sm">
-                    <legend className="pl-2 text-gray-700 font-medium">
-                      Phone
-                    </legend>
-                    <input
-                      type="number"
-                      value={input3}
-                      onChange={(e) => setInput3(e.target.value)}
-                      className="block w-full px-3 py-1 focus:outline-none "
-                    />
-                  </fieldset>
-                </label>
-                {/* أزرار الإرسال والإغلاق */}
-                <div className="flex justify-end space-x-2">
+                <input
+                  type="text"
+                  value={input1}
+                  onChange={(e) => setInput1(e.target.value)}
+                  placeholder="Name"
+                  className="w-full border rounded px-3 py-2"
+                />
+                <input
+                  type="text"
+                  value={input2}
+                  onChange={(e) => setInput2(e.target.value)}
+                  placeholder="Address"
+                  className="w-full border rounded px-3 py-2"
+                />
+                <input
+                  type="number"
+                  value={input3}
+                  onChange={(e) => setInput3(e.target.value)}
+                  placeholder="Phone"
+                  className="w-full border rounded px-3 py-2"
+                />
+                <div className="flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={togglePopup}
-                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                    className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
                   >
-                    Close
+                    Cancel
                   </button>
                   <button
                     type="submit"
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                   >
-                    Submit
+                    Add
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
 
-      <div>
-        {/* Amountالبوب أب */}
+      <AnimatePresence>
         {isOpenEdit && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black/20 bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-96 max-sm:w-[300px]">
-              <h2 className="text-xl font-bold mb-4">edit info</h2>
+          <motion.div
+            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-white rounded-lg shadow-lg p-6 w-96 max-w-full"
+              initial={{ y: -50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 50, opacity: 0 }}
+            >
+              <h2 className="text-xl font-semibold text-blue-600 mb-4">
+                Edit Technician
+              </h2>
               <form onSubmit={pay} className="space-y-4">
-                {/*الاسم*/}
-                <label className="block">
-                  <fieldset className="border border-gray-300 rounded-md shadow-sm">
-                    <legend className="pl-2 text-gray-700 font-medium">
-                      Name
-                    </legend>
-                    <input
-                      type="text"
-                      value={input1}
-                      onChange={(e) => setInput1(e.target.value)}
-                      className="block w-full px-3 py-1 focus:outline-none "
-                    />
-                  </fieldset>
-                  <fieldset className="border border-gray-300 rounded-md shadow-sm">
-                    <legend className="pl-2 text-gray-700 font-medium">
-                      Adress
-                    </legend>
-                    <input
-                      type="text"
-                      value={input2}
-                      onChange={(e) => setInput2(e.target.value)}
-                      className="block w-full px-3 py-1 focus:outline-none "
-                    />
-                  </fieldset>
-                  <fieldset className="border border-gray-300 rounded-md shadow-sm">
-                    <legend className="pl-2 text-gray-700 font-medium">
-                      Phone
-                    </legend>
-                    <input
-                      type="number"
-                      value={input3}
-                      onChange={(e) => setInput3(e.target.value)}
-                      className="block w-full px-3 py-1 focus:outline-none "
-                    />
-                  </fieldset>
-                </label>
-                {/* أزرار الإرسال والإغلاق */}
-                <div className="flex justify-end space-x-2">
+                <input
+                  type="text"
+                  value={input1}
+                  onChange={(e) => setInput1(e.target.value)}
+                  placeholder="Name"
+                  className="w-full border rounded px-3 py-2"
+                />
+                <input
+                  type="text"
+                  value={input2}
+                  onChange={(e) => setInput2(e.target.value)}
+                  placeholder="Address"
+                  className="w-full border rounded px-3 py-2"
+                />
+                <input
+                  type="number"
+                  value={input3}
+                  onChange={(e) => setInput3(e.target.value)}
+                  placeholder="Phone"
+                  className="w-full border rounded px-3 py-2"
+                />
+                <div className="flex justify-end gap-2">
                   <button
                     type="button"
                     onClick={togglePopupEdit}
-                    className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+                    className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
                   >
-                    Close
+                    Cancel
                   </button>
                   <button
                     type="submit"
-                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
                   >
-                    Submit
+                    Update
                   </button>
                 </div>
               </form>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         )}
-      </div>
+      </AnimatePresence>
 
-      <div>
-        {/* Add  */}
-        {isOpenAdd && (
-          <PupupInvo
-            togglePopupAdd={togglePopupAdd}
-            id={idAdd}
-            showData={showData}
-          />
-        )}
-      </div>
+      {isOpenAdd && (
+        <PupupInvo
+          togglePopupAdd={togglePopupAdd}
+          id={idAdd}
+          showData={showData}
+        />
+      )}
 
       <FontAwesomeIcon
         icon={faPersonCirclePlus}
         onClick={togglePopup}
-        className=" max-md:right-[30px] max-md:bottom-[30px] text-blue-950 hover:scale-[110%] transition-all text-[50px] fixed cursor-pointer right-[100px] bottom-[100px]"
+        className="fixed bottom-10 right-10 text-blue-700 text-5xl cursor-pointer hover:scale-110 transition-transform"
       />
+
       <ToastContainer />
     </div>
   );

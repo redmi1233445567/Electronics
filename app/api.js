@@ -1,7 +1,7 @@
 // import Cookies from "js-cookie";
 // import axios from "axios";
 
-export const mainUrl = "http://localhost:5000/api";
+export const mainUrl = "https://electronback-production.up.railway.app/api";
 
 // export const showData = (coustomeUrl) => {
 //   const token = Cookies.get("authToken");
